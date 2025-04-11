@@ -90,3 +90,14 @@ table, th, td {
   border-color: aquamarine;
 }
 
+input.error, select.error {
+  border-color: red;
+}
+
+p.message {
+  color: gray;
+}
+
+p.error {
+  color: red;
+}

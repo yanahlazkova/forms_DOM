@@ -1,17 +1,16 @@
 // Створення h1
 const h1 = document.createElement("h1");
-h1.innerText = 'Library system';
+h1.innerText = "Library system";
 // document.body.append(h1);
 
 // розміщення h1 в горі сторінки
-const divContainer = document.body.getElementsByClassName('container')[0];
+const divContainer = document.body.getElementsByClassName("container")[0];
 document.body.insertBefore(h1, divContainer);
 // console.log(h1.attributes);
 
-
 // отримаємо елемент по ID
 // I - варіант
-const table = document.body.querySelectorAll('table')[0]; // firstElementChild.nextElementSibling.firstElementChild;
+const table = document.body.querySelectorAll("table")[0]; // firstElementChild.nextElementSibling.firstElementChild;
 // console.log(table.tagName);
 
 // II - варіант
@@ -32,112 +31,128 @@ const table = document.body.querySelectorAll('table')[0]; // firstElementChild.n
 
 // II варіант
 for (let i = 0; i < table.rows.length; i++) {
-    const row = table.rows[i];
-    row.cells[i].innerText = `${i + 1}:${i + 1}`;
-    row.cells[i].style.backgroundColor = 'red';
+  const row = table.rows[i];
+  row.cells[i].innerText = `${i + 1}:${i + 1}`;
+  row.cells[i].style.backgroundColor = "red";
 }
 
 // table - ссылка на элемент с id="table"
-table.style.backgroundColor = 'blue';
-table.style.color = 'green'
-
+table.style.backgroundColor = "blue";
+table.style.color = "green";
 
 // внутри id="bg-grey" есть дефис, так что такой id не может служить именем переменной
-  // ...но мы можем обратиться к нему через квадратные скобки: window['bg-grey']
+// ...но мы можем обратиться к нему через квадратные скобки: window['bg-grey']
 // window['bg-grey'].style.backgroundColor = 'grey';
 
 const links = document.querySelectorAll('[href*="://"]');
-links.forEach(link => link.getAttribute('href').startsWith('http://internal.com') ? null : link.style.color = 'orange');
-
+links.forEach((link) =>
+  link.getAttribute("href").startsWith("http://internal.com")
+    ? null
+    : (link.style.color = "orange")
+);
 
 // список полів, обов'язкових для заповнення
 const listDate = [];
 
 // змінемо данні форми AddBook вручну
-divContainer.style.color = 'green';
+divContainer.style.color = "green";
 
 // const formAddBook = document.querySelector('form.AddBook');
 const formAddBook = document.forms.addbook;
 formAddBook.onsubmit = validateForm;
 
 // сповіщення <p>
-const pMassage = document.createElement('p');
-pMassage.style.color = 'grey';
-pMassage.innerHTML = '** Заповніть обов\'язкові поля';
+const pMassage = document.createElement("p");
+pMassage.className = "message";
+pMassage.value = "** Заповніть обов'язкові поля";
+pMassage.innerHTML = "** Заповніть обов'язкові поля";
 formAddBook.prepend(pMassage);
 
 // Title
 const labelBookTitle = formAddBook.querySelector('label[for="bTitle"]');
-labelBookTitle.innerHTML = 'Book Title:'
+labelBookTitle.innerHTML = "Book Title:";
 
 const inputBookTitle = formAddBook.querySelector('input[id="bTitle"]');
-inputBookTitle.setAttribute('placeholder', 'Title of the book..')
+inputBookTitle.setAttribute("placeholder", "Title of the book..");
+inputBookTitle.onblur = function () {
+  if (inputBookTitle.value != "") {
+    inputBookTitle.className = "";
+  }
+};
 listDate.push(inputBookTitle);
 
 // Author
 const labelBookAuthor = formAddBook.querySelector('label[for="authorname"');
-labelBookAuthor.innerHTML = 'Author:';
+labelBookAuthor.innerHTML = "Author:";
 
-const inputBookAuthor = formAddBook.querySelector('#authorname');
-inputBookAuthor.setAttribute('placeholder', 'Author..');
+const inputBookAuthor = formAddBook.querySelector("#authorname");
+inputBookAuthor.setAttribute("placeholder", "Author..");
 listDate.push(inputBookAuthor);
 
 // Видалимо div з тегом area
 inputBookAuthor.parentElement.parentElement.nextElementSibling.nextElementSibling.remove(); //setAttribute('hidden', 'true');
 
-// знайдемо Country 
+// знайдемо Country
 // та змінемо його на Gener
-const labelBookGenre = formAddBook.querySelector('label[for=country]');
+const labelBookGenre = formAddBook.querySelector("label[for=country]");
 const divBookGenre = labelBookGenre.parentElement.parentElement;
-labelBookGenre.setAttribute('for', 'genre');
-labelBookGenre.innerHTML = 'Genre:';
+labelBookGenre.setAttribute("for", "genre");
+labelBookGenre.innerHTML = "Genre:";
 
-const selectBookGenre = formAddBook.querySelector('#country');
-selectBookGenre.id = 'genre';
-selectBookGenre.name = 'genre';
+const selectBookGenre = formAddBook.querySelector("#country");
+selectBookGenre.id = "genre";
+selectBookGenre.name = "genre";
 listDate.push(selectBookGenre);
 
 const optionBookGenreFantasy = selectBookGenre.firstElementChild;
-optionBookGenreFantasy.setAttribute('value', 'fantasy');
-optionBookGenreFantasy.innerHTML = 'Fantasy';
+optionBookGenreFantasy.setAttribute("value", "fantasy");
+optionBookGenreFantasy.innerHTML = "Fantasy";
 
 const optionBookGenreDetective = optionBookGenreFantasy.nextElementSibling;
-optionBookGenreDetective.setAttribute('value', 'detective');
-optionBookGenreDetective.innerHTML = 'Detective';
+optionBookGenreDetective.setAttribute("value", "detective");
+optionBookGenreDetective.innerHTML = "Detective";
 
 const optionBookGenreThriller = optionBookGenreDetective.nextElementSibling;
-optionBookGenreThriller.setAttribute('value', 'thriller');
-optionBookGenreThriller.innerHTML = 'Thriller';
+optionBookGenreThriller.setAttribute("value", "thriller");
+optionBookGenreThriller.innerHTML = "Thriller";
 
-const optionBookGenreHorror = document.createElement('option');
-optionBookGenreHorror.setAttribute('value', 'horror');
-optionBookGenreHorror.innerHTML = 'Horror';
+const optionBookGenreHorror = document.createElement("option");
+optionBookGenreHorror.setAttribute("value", "horror");
+optionBookGenreHorror.innerHTML = "Horror";
 selectBookGenre.appendChild(optionBookGenreHorror);
 
+const optionBook = document.createElement("option");
+optionBook.defaultSelected = this;
+optionBook.value = optionBook.innerHTML = "";
+selectBookGenre.prepend(optionBook);
+
 // створимо div для Year:
-const divBookYear = document.createElement('div');
-divBookYear.setAttribute('class', 'row');
+const divBookYear = document.createElement("div");
+divBookYear.setAttribute("class", "row");
 // divBookYear.style.backgroundColor = 'blue';
 // divBookYear.style.height = '50px';
 divBookGenre.before(divBookYear);
 
-const labelBookYear = document.createElement('label');
-labelBookYear.setAttribute('for', 'year');
-labelBookYear.innerHTML = 'Year:';
+const labelBookYear = document.createElement("label");
+labelBookYear.setAttribute("for", "year");
+labelBookYear.innerHTML = "Year:";
 divBookYear.appendChild(labelBookYear);
 
-
-const selectBookYear = document.createElement('select');
-selectBookYear.id = 'byear';
-selectBookYear.name = 'byear';
+const selectBookYear = document.createElement("select");
+selectBookYear.id = "byear";
+selectBookYear.name = "byear";
+const option = document.createElement("option");
+option.value = option.innerHTML = "";
+selectBookYear.append(option);
 for (let optionYear = 2025; optionYear > 1950; optionYear--) {
-  const option = document.createElement('option');
-  option.setAttribute('value', optionYear);
-  option.innerHTML = optionYear;
+  const option = document.createElement("option");
+  // option.setAttribute('value', optionYear);
+  option.innerHTML = option.value = optionYear;
   selectBookYear.append(option);
 }
+
 divBookYear.append(selectBookYear);
-inputBookAuthor.parentElement.parentElement.after(divBookYear, )
+inputBookAuthor.parentElement.parentElement.after(divBookYear);
 listDate.push(selectBookYear);
 
 // отримаємо div кнопки Submit та розмістимо внизу форми
@@ -147,45 +162,45 @@ listDate.push(selectBookYear);
 const divSubmit = formAddBook.lastElementChild;
 
 // Створення checkbox EBook
-const divEbook = document.createElement('div');
-divEbook.className = 'row';
+const divEbook = document.createElement("div");
+divEbook.className = "row";
 divBookYear.append(divEbook);
 
-const fieldsetEbook = document.createElement('fieldset');
-fieldsetEbook.className = 'row';
+const fieldsetEbook = document.createElement("fieldset");
+fieldsetEbook.className = "row";
 fieldsetEbook.hidden = true;
-fieldsetEbook.name = 'ebookFieldset';
+fieldsetEbook.name = "ebookFieldset";
 divBookYear.after(fieldsetEbook);
 
-const legendEBook = document.createElement('legend');
-legendEBook.innerHTML = 'Info e-book:';
+const legendEBook = document.createElement("legend");
+legendEBook.innerHTML = "Info e-book:";
 fieldsetEbook.append(legendEBook);
 
-const checkboxEbook = document.createElement('input');
-checkboxEbook.setAttribute('type', 'checkbox');
-checkboxEbook.id = 'ebook';
-checkboxEbook.name = 'ebook';
+const checkboxEbook = document.createElement("input");
+checkboxEbook.setAttribute("type", "checkbox");
+checkboxEbook.id = "ebook";
+checkboxEbook.name = "ebook";
 checkboxEbook.onclick = isEBook;
 // legendEBook.append(checkboxEbook);
 
-const labelEBook = document.createElement('label');
-labelEBook.innerHTML = 'e-Book';
-labelEBook.style.marginLeft = '5px';
-labelEBook.style.marginTop = '16px';
+const labelEBook = document.createElement("label");
+labelEBook.innerHTML = "e-Book";
+labelEBook.style.marginLeft = "5px";
+labelEBook.style.marginTop = "16px";
 labelEBook.onclick = isEBook;
 divEbook.append(checkboxEbook, labelEBook);
 
 // вибір файлу e-Book
-const inputFileEBook = document.createElement('input')
-inputFileEBook.id = 'fileebook';
-inputFileEBook.name = 'fileebook'
-inputFileEBook.setAttribute('type', 'file');
+const inputFileEBook = document.createElement("input");
+inputFileEBook.id = "fileebook";
+inputFileEBook.name = "fileebook";
+inputFileEBook.setAttribute("type", "file");
 inputFileEBook.hidden = true;
-inputFileEBook.addEventListener('change', dataEBook);
+inputFileEBook.addEventListener("change", dataEBook);
 divEbook.append(inputFileEBook);
 // listDate.push(inputFileEBook);
 
-const labelInforEBook = document.createElement('pre');
+const labelInforEBook = document.createElement("pre");
 legendEBook.after(labelInforEBook);
 
 // Кнопка Submit
@@ -195,46 +210,55 @@ legendEBook.after(labelInforEBook);
 function isEBook() {
   checkboxEbook.checked = inputFileEBook.hidden;
   inputFileEBook.hidden = !inputFileEBook.hidden;
-  labelInforEBook.hidden = inputFileEBook.hidden 
+  labelInforEBook.hidden = inputFileEBook.hidden;
   fieldsetEbook.hidden = inputFileEBook.hidden;
 }
 
-function dataEBook () {
+function dataEBook() {
   if (this.files.length > 0) {
     fieldsetEbook.hidden = false;
     const currentFile = this.files[0];
-    const format = currentFile.type.substring(currentFile.type.lastIndexOf('/') + 1);
+    const format = currentFile.type.substring(
+      currentFile.type.lastIndexOf("/") + 1
+    );
     // console.log(`Format: ${format}`);
     // console.log(this.value);
     // показати данні обраного файлу e-Book
-    const infoEBook = `Path:  <span style='color: lightgrey'>${this.value}</span><br>` + 
-    `Name:  <span style='color: lightgrey'>${currentFile.name}</span><br>` +
-    `Size:  <span style='color: lightgrey'>${currentFile.size}</span> bites<br>` +
-    `Format:  <span style='color: lightgrey'>${format}</span>`;
-    
+    const infoEBook =
+      `Path:  <span style='color: lightgrey'>${this.value}</span><br>` +
+      `Name:  <span style='color: lightgrey'>${currentFile.name}</span><br>` +
+      `Size:  <span style='color: lightgrey'>${currentFile.size}</span> bites<br>` +
+      `Format:  <span style='color: lightgrey'>${format}</span>`;
+
     labelInforEBook.innerHTML = infoEBook;
-  } else console.log('File NOT');
+  } else console.log("File NOT");
 }
 
 // перевірка заповнення обов'язкових полів
 function validateForm() {
   let countInvalidFields = 0;
-  listDate.forEach(field => {
-    if (field.value == '') {
-      field.style.borderColor = 'red'; 
+  listDate.forEach((field) => {
+    if (field.value == "") {
+      // field.style.borderColor = 'red';
+      field.className = "error";
       countInvalidFields++;
+    } else {
+      field.className = "";
+      // field.style.borderColor = '#ccc';
     }
   });
-  if (checkboxEbook.checked & inputFileEBook.files.length == 0) {
-    inputFileEBook.style.borderColor = 'red';
+  if (checkboxEbook.checked & (inputFileEBook.files.length == 0)) {
+    // inputFileEBook.style.borderColor = 'red';
+    inputFileEBook.className = "error";
     countInvalidFields++;
-  }
+  } else inputFileEBook.className = "";
   if (countInvalidFields) {
-    pMassage.style.color = 'red';
+    // pMassage.style.color = 'red';
+    pMassage.setAttribute("class", "error");
     pMassage.innerHTML = `** Marked fields (${countInvalidFields}) must be filled out`;
-
+  } else {
+    pMassage.className = "message";
+    pMassage.innerHTML = pMassage.value;
   }
-  // divContainer.prepend(p);
-  // alert(`Marded fields (${countInvalidFields}) must be filled out`);
   return false;
 }
