@@ -1,3 +1,5 @@
+// import * as dataFake from './dataFake';
+
 // Створення h1
 const h1 = document.createElement("h1");
 h1.innerText = "Library system";
@@ -60,13 +62,6 @@ divContainer.style.color = "green";
 // const formAddBook = document.querySelector('form.AddBook');
 const formAddBook = document.forms.addbook;
 formAddBook.onsubmit = validateForm;
-
-// сповіщення <p>
-const pMassage = document.createElement("p");
-pMassage.className = "message";
-pMassage.value = "** Заповніть обов'язкові поля";
-pMassage.innerHTML = "** Заповніть обов'язкові поля";
-formAddBook.prepend(pMassage);
 
 // Title
 const labelBookTitle = formAddBook.querySelector('label[for="bTitle"]');
@@ -203,8 +198,43 @@ divEbook.append(inputFileEBook);
 const labelInforEBook = document.createElement("pre");
 legendEBook.after(labelInforEBook);
 
-// Кнопка Submit
-// const buttonSubmit = divSubmit.getElementsByTagName('input')[0];
+// створення div та кнопки для auto-заповнення полів
+const divAutoFill = document.createElement('div');
+divAutoFill.className = 'row';
+formAddBook.prepend(divAutoFill);
+
+// const buttonAuto = formAddBook.querySelector('input[type=submit]').cloneNode(true);// document.createElement('input');
+const buttonAuto = document.createElement('button');
+buttonAuto.onclick = fillData;
+buttonAuto.innerHTML = 'Auto fill';
+buttonAuto.setAttribute('type', 'button');
+buttonAuto.disabled = true;
+divAutoFill.append(buttonAuto);
+
+// checkbox автозаповнення
+const divCheckboxAutoFill = document.createElement('div');
+divCheckboxAutoFill.onclick = isAutoFill;
+divAutoFill.append(divCheckboxAutoFill);
+
+const checkboxAutoFill = checkboxEbook.cloneNode(true);
+divCheckboxAutoFill.name = 'autofill';
+checkboxAutoFill.checked = false;
+divCheckboxAutoFill.append(checkboxAutoFill);
+
+const labelCheckboxAutoFill = document.createElement('label');
+labelCheckboxAutoFill.innerHTML = 'Автоматне заповнення';
+labelCheckboxAutoFill.id = 'autofill';
+labelCheckboxAutoFill.setAttribute('for', 'autofill');
+labelCheckboxAutoFill.style.marginLeft = '10px';
+divCheckboxAutoFill.append(labelCheckboxAutoFill);
+
+
+// повідомлення <p>
+const pMassage = document.createElement("p");
+pMassage.className = "message";
+pMassage.value = "** Заповніть обов'язкові поля";
+pMassage.innerHTML = "** Заповніть обов'язкові поля";
+divAutoFill.append(pMassage);
 
 // показати/сховати додавання файлу e-Book
 function isEBook() {
@@ -261,4 +291,14 @@ function validateForm() {
     pMassage.innerHTML = pMassage.value;
   }
   return false;
+}
+
+// const isAutoFill = () => {
+function isAutoFill() {
+  checkboxAutoFill.checked = !checkboxAutoFill.checked;
+  buttonAuto.disabled = !buttonAuto.disabled;
+}
+
+function fillData() {
+  // dataFake.autoDataFill();
 }
