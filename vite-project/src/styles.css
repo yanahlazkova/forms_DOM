@@ -43,7 +43,7 @@ input[type=submit], button[type=button] {
   float: right;
 }
 
-button:disabled {
+button:disabled, input[type=submit]:disabled {
   background-color: #7f8f89;
   cursor: no-drop;
 }

@@ -1,6 +1,3 @@
-import * as dataFake from './dataFake';
-// import dataFake from './dataFake'
-
 // Створення h1
 const h1 = document.createElement("h1");
 h1.innerText = "Library system";
@@ -8,7 +5,7 @@ h1.innerText = "Library system";
 
 // розміщення h1 в горі сторінки
 const divContainer = document.body.getElementsByClassName("container")[0];
-document.body.insertBefore(h1, divContainer);
+document.body.append(h1, divContainer);
 // console.log(h1.attributes);
 
 // отримаємо елемент по ID
@@ -162,13 +159,13 @@ listDate.push(selectBookYear);
 // Створення checkbox EBook
 const divEbook = document.createElement("div");
 divEbook.className = "row";
-divBookYear.append(divEbook);
+divBookYear.after(divEbook);
 
 const fieldsetEbook = document.createElement("fieldset");
 fieldsetEbook.className = "row";
 fieldsetEbook.hidden = true;
 fieldsetEbook.name = "ebookFieldset";
-divBookYear.after(fieldsetEbook);
+divEbook.after(fieldsetEbook);
 
 const legendEBook = document.createElement("legend");
 legendEBook.innerHTML = "Info e-book:";
@@ -223,18 +220,19 @@ const checkboxAutoFill = document.createElement('input'); // checkboxEbook.clone
 checkboxAutoFill.type = 'checkbox';
 checkboxAutoFill.id = 'autofill';
 checkboxAutoFill.name = 'autofill';
-checkboxAutoFill.checked = false;
 checkboxAutoFill.onclick = isAutoFill;
+checkboxAutoFill.checked = false;
 divCheckboxAutoFill.append(checkboxAutoFill);
 
 const labelCheckboxAutoFill = document.createElement('label');
-labelCheckboxAutoFill.innerHTML = 'Автоматне заповнення';
-labelCheckboxAutoFill.id = 'autofill';
-labelCheckboxAutoFill.setAttribute('for', 'autofill');
+labelCheckboxAutoFill.innerHTML = 'Автоматичне заповнення';
+// labelCheckboxAutoFill.id = 'autofill';
 labelCheckboxAutoFill.onclick = isAutoFill;
 labelCheckboxAutoFill.style.marginLeft = '10px';
 divCheckboxAutoFill.append(labelCheckboxAutoFill);
 
+// кнопка Submit
+const submit = formAddBook.querySelector('input[type=submit]');
 
 // повідомлення <p>
 const pMassage = document.createElement("p");
@@ -284,48 +282,73 @@ function validateForm() {
       // field.style.borderColor = '#ccc';
     }
   });
-  if (checkboxEbook.checked & (inputFileEBook.files.length == 0)) {
+  if (checkboxEbook.checked & (inputFileEBook.files.length == 0) & !checkboxAutoFill.checked) {
     // inputFileEBook.style.borderColor = 'red';
     inputFileEBook.className = "error";
     countInvalidFields++;
   } else inputFileEBook.className = "";
   if (countInvalidFields) {
-    // pMassage.style.color = 'red';
+    // pMassage.hidden = false;
     pMassage.setAttribute("class", "error");
     pMassage.innerHTML = `** Marked fields (${countInvalidFields}) must be filled out`;
   } else {
     pMassage.className = "message";
-    pMassage.innerHTML = pMassage.value;
+    pMassage.innerHTML = 'Данні передані';
   }
   return false;
 }
 
-// const isAutoFill = () => {
+// const isAutoFill = () => {}
+
+// автозаповнення
 function isAutoFill() {
   buttonAuto.disabled = !buttonAuto.disabled;
+  submit.disabled = !buttonAuto.disabled;
   checkboxAutoFill.checked = !buttonAuto.disabled;
-  pMassage.hidden = !pMassage.hidden;
+  pMassage.className = 'message';
+  pMassage.innerHTML = pMassage.value;
 
-  for (let elem of formAddBook.querySelectorAll('input[type=text], select')) {
+  for (let elem of formAddBook.querySelectorAll('#ebook, input[type=text], select')) {
     elem.disabled = !elem.disabled;
   }
 }
 
+// автозаповнення форми
 function fillData() {
-  const dataBook = dataFake.autoDataFill();
-  console.log('📚 Книга:', dataBook);
+  submit.disabled = false;
+  pMassage.innerHTML = pMassage.value;
+  const dataEBook = dataFake.autoDataFill();
+  console.log('📚 Книга:', dataEBook);
 
-  inputBookTitle.value = dataBook['title'];
-  inputBookAuthor.value = dataBook.author;
-  selectBookYear.value = dataBook.year;
+  inputBookTitle.value = dataEBook['title'];
+  inputBookAuthor.value = dataEBook.author;
+  selectBookYear.value = dataEBook.year;
+
+  if (dataEBook.ebook) {
+    checkboxEbook.checked = true;
+    inputFileEBook.hidden = true;
+    fieldsetEbook.hidden = false;
+    labelInforEBook.innerHTML = 
+    `Path:  <span style='color: lightgrey'>${dataEBook.ebook.path}</span><br>` +
+    `Name:  <span style='color: lightgrey'>${dataEBook.ebook.name}</span><br>` +
+    `Size:  <span style='color: lightgrey'>${dataEBook.ebook.size}</span> bites<br>` +
+    `Format:  <span style='color: lightgrey'>${dataEBook.ebook.format}</span>`;
+    labelInforEBook.hidden = false;
+    console.log('eBook', dataEBook.ebook.path);
+
+  } else {
+    checkboxEbook.checked = false;
+    fieldsetEbook.hidden = true;
+    labelInforEBook.hidden = true;
+  }
 
   // перевірка, чи існує вказаний жанр у списку вибору
-  let isGenre = selectBookGenre.querySelector(`[value="${dataBook.genre.toLowerCase()}"]`) // arrayGenre.indexOf(dataBook.genre);
+  let isGenre = selectBookGenre.querySelector(`[value="${dataEBook.genre.toLowerCase()}"]`) // arrayGenre.indexOf(dataBook.genre);
   console.log(isGenre);
    if (isGenre == null) {
     isGenre = optionBookGenreDetective.cloneNode(false); 
-    isGenre.innerHTML = dataBook.genre;
-    isGenre.value = dataBook.genre.toLocaleLowerCase();
+    isGenre.innerHTML = dataEBook.genre;
+    isGenre.value = dataEBook.genre.toLocaleLowerCase();
     selectBookGenre.append(isGenre);
   } 
   isGenre.selected = true;
