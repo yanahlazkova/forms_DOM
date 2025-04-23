@@ -104,6 +104,6 @@ p.message {
   float: left;
 }
 
-p.error {
+.error {
   color: red;
 }

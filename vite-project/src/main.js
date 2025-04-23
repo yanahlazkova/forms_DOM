@@ -1,17 +1,19 @@
+import * as dataFake from './dataFake';
+
 // Створення h1
 const h1 = document.createElement("h1");
 h1.innerText = "Library system";
 // document.body.append(h1);
 
-// розміщення h1 в горі сторінки
-const divContainer = document.body.getElementsByClassName("container")[0];
-document.body.append(h1, divContainer);
-// console.log(h1.attributes);
-
 // отримаємо елемент по ID
 // I - варіант
 const table = document.body.querySelectorAll("table")[0]; // firstElementChild.nextElementSibling.firstElementChild;
 // console.log(table.tagName);
+
+// розміщення h1 в горі сторінки
+const divContainer = document.body.getElementsByClassName("container")[0];
+table.before(h1, divContainer);
+// console.log(h1.attributes);
 
 // II - варіант
 // const table = document.getElementById('table');
@@ -241,6 +243,14 @@ pMassage.value = "** Заповніть обов'язкові поля";
 pMassage.innerHTML = "** Заповніть обов'язкові поля";
 divAutoFill.append(pMassage);
 
+// для кожного з полів встановити дію при зміні даних
+for (let elem of formAddBook.querySelectorAll('#fileebook, input[type=text], select')) {
+  elem.onchange = () => {
+    if (submit.disabled) {
+    submit.disabled = !submit.disabled;}
+  };
+}
+
 // показати/сховати додавання файлу e-Book
 function isEBook() {
   checkboxEbook.checked = inputFileEBook.hidden;
@@ -272,19 +282,17 @@ function dataEBook() {
 // перевірка заповнення обов'язкових полів
 function validateForm() {
   let countInvalidFields = 0;
+// зміна класу незавлених полів (border color - red)
   listDate.forEach((field) => {
     if (field.value == "") {
-      // field.style.borderColor = 'red';
       field.className = "error";
       countInvalidFields++;
     } else {
       field.className = "";
-      // field.style.borderColor = '#ccc';
     }
   });
   if (checkboxEbook.checked & (inputFileEBook.files.length == 0) & !checkboxAutoFill.checked) {
-    // inputFileEBook.style.borderColor = 'red';
-    inputFileEBook.className = "error";
+    inputFileEBook.className = 'error';
     countInvalidFields++;
   } else inputFileEBook.className = "";
   if (countInvalidFields) {
@@ -294,6 +302,8 @@ function validateForm() {
   } else {
     pMassage.className = "message";
     pMassage.innerHTML = 'Данні передані';
+    submit.disabled = true;
+    inputFileEBook.className = "";
   }
   return false;
 }
@@ -306,10 +316,18 @@ function isAutoFill() {
   submit.disabled = !buttonAuto.disabled;
   checkboxAutoFill.checked = !buttonAuto.disabled;
   pMassage.className = 'message';
-  pMassage.innerHTML = pMassage.value;
+  inputFileEBook.hidden = true;
+  // якщо дані в повідомленні були змінені (тобто при авто заповнені було повідомлення що дані відправлені),
+  // щоб не було можливості відправити ті самі данні повторно при знятті галочки Автозаповлення - 
+  // заблокувати повторне відправлення даних
+  if (pMassage.innerHTML != pMassage.value) {
+    pMassage.innerHTML = pMassage.value;
+    submit.disabled = true;
+  }
 
   for (let elem of formAddBook.querySelectorAll('#ebook, input[type=text], select')) {
     elem.disabled = !elem.disabled;
+    elem.className = "";
   }
 }
 
@@ -353,3 +371,4 @@ function fillData() {
   } 
   isGenre.selected = true;
 }
+
