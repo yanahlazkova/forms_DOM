@@ -158,10 +158,17 @@ listDate.push(selectBookYear);
 // або:
 // const divSubmit = formAddBook.lastElementChild;
 
-// Створення checkbox EBook
+// Створення div для книг e-book
 const divEbook = document.createElement("div");
 divEbook.className = "row";
 divBookYear.after(divEbook);
+// divEbook.onclick = isEBook;
+
+// div для checkbox та label
+const divCheckboxEBook = document.createElement('div');
+divCheckboxEBook.style.display = 'inline';
+divCheckboxEBook.onclick = isEBook;
+divEbook.append(divCheckboxEBook);
 
 const fieldsetEbook = document.createElement("fieldset");
 fieldsetEbook.className = "row";
@@ -177,21 +184,24 @@ const checkboxEbook = document.createElement("input");
 checkboxEbook.setAttribute("type", "checkbox");
 checkboxEbook.id = "ebook";
 checkboxEbook.name = "ebook";
-checkboxEbook.onclick = isEBook;
+checkboxEbook.checked = false;
+// checkboxEbook.onclick = isEBook;
 // legendEBook.append(checkboxEbook);
 
 const labelEBook = document.createElement("label");
 labelEBook.innerHTML = "e-Book";
 labelEBook.style.marginLeft = "5px";
 labelEBook.style.marginTop = "16px";
-labelEBook.onclick = isEBook;
-divEbook.append(checkboxEbook, labelEBook);
+// labelEBook.onclick = isEBook;
+divCheckboxEBook.append(checkboxEbook, labelEBook);
 
 // вибір файлу e-Book
 const inputFileEBook = document.createElement("input");
 inputFileEBook.id = "fileebook";
 inputFileEBook.name = "fileebook";
-inputFileEBook.setAttribute("type", "file");
+// inputFileEBook.setAttribute("type", "file");
+inputFileEBook.type = 'file';
+// inputFileEBook.value = 'Select a file';
 inputFileEBook.hidden = true;
 inputFileEBook.addEventListener("change", dataEBook);
 divEbook.append(inputFileEBook);
@@ -235,6 +245,7 @@ divCheckboxAutoFill.append(labelCheckboxAutoFill);
 
 // кнопка Submit
 const submit = formAddBook.querySelector('input[type=submit]');
+submit.value = 'Save'
 
 // повідомлення <p>
 const pMassage = document.createElement("p");
@@ -252,11 +263,14 @@ for (let elem of formAddBook.querySelectorAll('#fileebook, input[type=text], sel
 }
 
 // показати/сховати додавання файлу e-Book
-function isEBook() {
+function isEBook(e) {
   checkboxEbook.checked = inputFileEBook.hidden;
   inputFileEBook.hidden = !inputFileEBook.hidden;
   labelInforEBook.hidden = inputFileEBook.hidden;
   fieldsetEbook.hidden = inputFileEBook.hidden;
+  // e.preventDefault();
+  
+  console.log(e.target);
 }
 
 function dataEBook() {
@@ -280,7 +294,9 @@ function dataEBook() {
 }
 
 // перевірка заповнення обов'язкових полів
-function validateForm() {
+function validateForm(e) {
+  console.log('validate', e);
+  
   let countInvalidFields = 0;
 // зміна класу незавлених полів (border color - red)
   listDate.forEach((field) => {
@@ -329,6 +345,8 @@ function isAutoFill() {
     elem.disabled = !elem.disabled;
     elem.className = "";
   }
+  // дозволити/заборонити клікати label "e-Book"
+  checkboxAutoFill.checked ? divCheckboxEBook.onclick = null : divCheckboxEBook.onclick = isEBook;
 }
 
 // автозаповнення форми
@@ -371,4 +389,3 @@ function fillData() {
   } 
   isGenre.selected = true;
 }
-
