@@ -9,6 +9,11 @@
 </head>
 
 <body>
+    <div>
+        <label id='labelfileInput' for="fileInput">Вибрати файл</label>
+        <span id="fileName" class="file-name">Файл не вибрано</span>
+        <input type="file" id="fileInput" style="display: none;" />
+    </div>
     <div class="container">
         <!-- <h1 id="bg-grey">Library system</h1> -->
         <div class="formsAdding">
@@ -24,10 +29,10 @@
                 </div>
                 <div class="row">
                     <div class="col-25">
-                        <label for="authorname">Last Name</label>
+                        <label for="author">Last Name</label>
                     </div>
                     <div class="col-75">
-                        <input type="text" id="authorname" name="authorname" placeholder="Your last name..">
+                        <input type="text" id="author" name="author" placeholder="Your last name..">
                     </div>
                 </div>
                 <div class="row">
@@ -147,13 +152,36 @@
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/faker@5.5.3/dist/faker.min.js"></script> -->
     <script type="module" src="./src/main.js"></script>
-<div id="api_validation">
-    <input type="number" name="number" id="number" value="0">
-    <button type="submit" onclick="validate()">Validate</button>
-    <p id="result"></p>
-</div>
+    <div id="api_validation">
+        <input type="number" name="number" id="number" value="0">
+        <button type="submit" onclick="validate()">Validate</button>
+        <p id="result"></p>
+    </div>
+
+
+    
+    
+
+    <script>
+        const fileInput = document.getElementById("fileInput");
+        const fileNameDisplay = document.getElementById("fileName");
+        const fileUploadButton = document.querySelector(".file-upload-button");
+
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+                fileNameDisplay.textContent = fileName;
+            } else {
+                fileNameDisplay.textContent = "Файл не вибрано";
+            }
+        });
+
+        fileUploadButton.addEventListener("click", () => {
+            fileInput.click();
+        });
+    </script>
 </body>
-<script>
+<!-- <script>
     const number = document.getElementById('number');
     const result = document.getElementById('result');
     number.setAttribute('min', 20);
@@ -171,5 +199,5 @@
         } else alert("Geolocation is not supported by this browser.");
     }
 
-</script>
+</script> -->
 </html>

@@ -79,10 +79,10 @@ inputBookTitle.onblur = function () {
 // listDate.push(inputBookTitle);
 
 // Author
-const labelBookAuthor = formAddBook.querySelector('label[for="authorname"');
+const labelBookAuthor = formAddBook.querySelector('label[for="author"');
 labelBookAuthor.innerHTML = "Author:";
 
-const inputBookAuthor = formAddBook.querySelector("#authorname");
+const inputBookAuthor = formAddBook.querySelector("#author");
 inputBookAuthor.setAttribute("placeholder", "Author..");
 inputBookAuthor.required = true;
 // listDate.push(inputBookAuthor);
@@ -203,15 +203,15 @@ labelEBook.style.marginTop = "16px";
 divEbook.append(checkboxEbook, labelEBook);
 
 // вибір файлу e-Book
-const inputFileEBook = document.createElement("input");
-inputFileEBook.id = "fileebook";
-inputFileEBook.name = "fileebook";
+const inputEBookFile = document.createElement("input");
+inputEBookFile.id = "ebookfile";
+inputEBookFile.name = "ebookfile";
 // inputFileEBook.setAttribute("type", "file");
-inputFileEBook.type = 'file';
+inputEBookFile.type = 'file';
 // inputFileEBook.value = 'Select a file';
-inputFileEBook.hidden = true;
-inputFileEBook.addEventListener("change", dataEBook);
-divEbook.append(inputFileEBook);
+inputEBookFile.hidden = true;
+inputEBookFile.addEventListener("change", dataEBook);
+divEbook.append(inputEBookFile);
 // listDate.push(inputFileEBook);
 
 const preInforEBook = document.createElement("pre");
@@ -262,7 +262,7 @@ pMassage.innerHTML = "** Заповніть обов'язкові поля";
 divAutoFill.append(pMassage);
 
 // для кожного з полів встановити дію при зміні даних
-for (let elem of formAddBook.querySelectorAll('#fileebook, input[type=text], select')) {
+for (let elem of formAddBook.querySelectorAll('#ebookfile, input[type=text], select')) {
   elem.onchange = () => {
     if (submit.disabled) {
     submit.disabled = !submit.disabled;}
@@ -271,10 +271,10 @@ for (let elem of formAddBook.querySelectorAll('#fileebook, input[type=text], sel
 
 // показати/сховати додавання файлу e-Book
 function isEBook(e) {
-  checkboxEbook.checked = inputFileEBook.hidden;
-  inputFileEBook.hidden = !inputFileEBook.hidden;
-  preInforEBook.hidden = inputFileEBook.hidden;
-  fieldsetEbook.hidden = inputFileEBook.hidden;
+  checkboxEbook.checked = inputEBookFile.hidden;
+  inputEBookFile.hidden = !inputEBookFile.hidden;
+  preInforEBook.hidden = inputEBookFile.hidden;
+  fieldsetEbook.hidden = inputEBookFile.hidden;
   // e.preventDefault();
   
   console.log(e.target);
@@ -305,9 +305,10 @@ function validateForm(e) {
   console.log('validate', e);
   
   let countInvalidFields = 0;
+  const cookie = document.cookie;
 // зміна класу незаповнених полів (border color - red)
   const listDate = formAddBook.querySelectorAll('[required]')
-  console.log(listDate);
+  console.log('Список обов\'язкових полів', listDate);
   listDate.forEach((field) => {
     // if (field.value == "") {
     //   field.className = "error";
@@ -315,12 +316,14 @@ function validateForm(e) {
     // } else {
     //   field.className = "";
     // }
+    
+    field.checkValidity() ? (cookie = (encodeURIComponent(field.name) + '=' + encodeURIComponent(field.value))) : null;
     console.log(field +': ' + field.checkValidity());
   });
-  if (checkboxEbook.checked & (inputFileEBook.files.length == 0) & !checkboxAutoFill.checked) {
-    inputFileEBook.className = 'error';
+  if (checkboxEbook.checked & (inputEBookFile.files.length == 0) & !checkboxAutoFill.checked) {
+    inputEBookFile.className = 'error';
     countInvalidFields++;
-  } else inputFileEBook.className = "";
+  } else inputEBookFile.className = "";
   if (countInvalidFields) {
     // pMassage.hidden = false;
     pMassage.setAttribute("class", "error");
@@ -329,8 +332,10 @@ function validateForm(e) {
     pMassage.className = "message";
     pMassage.innerHTML = 'Данні передані';
     submit.disabled = true;
-    inputFileEBook.className = "";
+    inputEBookFile.className = "";
   }
+
+
   return false;
 }
 
@@ -342,7 +347,7 @@ function isAutoFill() {
   submit.disabled = !buttonAuto.disabled;
   checkboxAutoFill.checked = !buttonAuto.disabled;
   pMassage.className = 'message';
-  inputFileEBook.hidden = true;
+  inputEBookFile.hidden = true;
   // якщо дані в повідомленні були змінені (тобто при авто заповнені було повідомлення що дані відправлені),
   // щоб не було можливості відправити ті самі данні повторно при знятті галочки Автозаповлення - 
   // заблокувати повторне відправлення даних
@@ -366,13 +371,15 @@ function fillData() {
   const dataEBook = dataFake.autoDataFill();
   console.log('📚 Книга:', dataEBook);
 
+  // const cookie = document.cookie;
+
   inputBookTitle.value = dataEBook['title'];
   inputBookAuthor.value = dataEBook.author;
   selectBookYear.value = dataEBook.year;
 
   if (dataEBook.ebook) {
     checkboxEbook.checked = true;
-    inputFileEBook.hidden = true;
+    inputEBookFile.hidden = true;
     fieldsetEbook.hidden = false;
     preInforEBook.innerHTML = 
     `Path:  <span style='color: lightgrey'>${dataEBook.ebook.path}</span><br>` +
@@ -400,18 +407,18 @@ function fillData() {
   isGenre.selected = true;
 }
 
-let script = document.createElement('script');
+// let script = document.createElement('script');
 
-// мы можем загрузить любой скрипт с любого домена
-script.src = "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.3.0/lodash.js"
-document.head.append(script);
+// // мы можем загрузить любой скрипт с любого домена
+// script.src = "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.3.0/lodash.js"
+// document.head.append(script);
 
-script.onload = function() {
-  // в скрипте создаётся вспомогательная переменная с именем "_"
-  alert(_.VERSION); // отображает версию библиотеки
-  console.log(_);
-};
+// script.onload = function() {
+//   // в скрипте создаётся вспомогательная переменная с именем "_"
+//   alert(_.VERSION); // отображает версию библиотеки
+//   console.log(_);
+// };
 
-script.onerror = function() {
-  console.log('Error of load: ' + this.src);
-}
+// script.onerror = function() {
+//   console.log('Error of load: ' + this.src);
+// }
