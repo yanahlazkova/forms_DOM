@@ -165,7 +165,7 @@ selectBookYear.required = true;
 
 // Створення div для книг e-book
 const divEbook = document.createElement("div");
-divEbook.className = "row";
+divEbook.className = "row-center";
 divBookYear.after(divEbook);
 // divEbook.onclick = isEBook;
 
@@ -206,13 +206,18 @@ divEbook.append(checkboxEbook, labelEBook);
 const inputEBookFile = document.createElement("input");
 inputEBookFile.id = "ebookfile";
 inputEBookFile.name = "ebookfile";
-// inputFileEBook.setAttribute("type", "file");
 inputEBookFile.type = 'file';
-// inputFileEBook.value = 'Select a file';
+// inputFileEBook.disabled = true;
 inputEBookFile.hidden = true;
 inputEBookFile.addEventListener("change", dataEBook);
 divEbook.append(inputEBookFile);
 // listDate.push(inputFileEBook);
+
+const labelOpenFile = document.createElement('label');
+labelOpenFile.setAttribute('for', 'ebookfile');
+labelOpenFile.className = 'label-button';
+labelOpenFile.innerHTML = 'Вибрати файл'
+divEbook.append(labelOpenFile);
 
 const preInforEBook = document.createElement("pre");
 preInforEBook.required = checkboxEbook.checked;
@@ -261,7 +266,7 @@ pMassage.value = "** Заповніть обов'язкові поля";
 pMassage.innerHTML = "** Заповніть обов'язкові поля";
 divAutoFill.append(pMassage);
 
-// для кожного з полів встановити дію при зміні даних
+// для кожного з полів встановити дію при зміні даних та встановити доступною кнопку Save
 for (let elem of formAddBook.querySelectorAll('#ebookfile, input[type=text], select')) {
   elem.onchange = () => {
     if (submit.disabled) {
@@ -271,6 +276,7 @@ for (let elem of formAddBook.querySelectorAll('#ebookfile, input[type=text], sel
 
 // показати/сховати додавання файлу e-Book
 function isEBook(e) {
+  inputEBookFile.style.display = 'none';
   checkboxEbook.checked = inputEBookFile.hidden;
   inputEBookFile.hidden = !inputEBookFile.hidden;
   preInforEBook.hidden = inputEBookFile.hidden;
@@ -280,6 +286,22 @@ function isEBook(e) {
   console.log(e.target);
 }
 
+// створення кнопки для вибору файлу
+const createButtonOpenFile = () => {
+  const buttonOpenFile = document.createElement('input');
+  buttonOpenFile.id = 'fileInput';
+  buttonOpenFile.type = 'file';
+  buttonOpenFile.style.display = 'none';
+
+  const labelOpenFile = document.createAttribute('label');
+  labelOpenFile.setAttribute('for', 'fileInput');
+  labelOpenFile.className = 'button';
+  labelOpenFile.value = 'Вибрати файл';
+
+  divEbook.append(buttonOpenFile, labelOpenFile)
+}
+
+// відображення даних (путь до файлу, ім'я, розмір, формат файлу) eBook
 function dataEBook() {
   if (this.files.length > 0) {
     fieldsetEbook.hidden = false;
@@ -287,8 +309,7 @@ function dataEBook() {
     const format = currentFile.type.substring(
       currentFile.type.lastIndexOf("/") + 1
     );
-    // console.log(`Format: ${format}`);
-    // console.log(this.value);
+
     // показати данні обраного файлу e-Book
     const infoEBook =
       `Path:  <span style='color: lightgrey'>${this.value}</span><br>` +
@@ -301,42 +322,48 @@ function dataEBook() {
 }
 
 // перевірка заповнення обов'язкових полів
-function validateForm(e) {
-  console.log('validate', e);
+
+// I - спосіб
+
+// function validateForm(e) {
+//   // console.log('validate', e);
   
-  let countInvalidFields = 0;
-  const cookie = document.cookie;
-// зміна класу незаповнених полів (border color - red)
-  const listDate = formAddBook.querySelectorAll('[required]')
-  console.log('Список обов\'язкових полів', listDate);
-  listDate.forEach((field) => {
-    // if (field.value == "") {
-    //   field.className = "error";
-    //   countInvalidFields++;
-    // } else {
-    //   field.className = "";
-    // }
+//   let countInvalidFields = 0;
+
+// // зміна класу незаповнених полів (border color - red)
+//   const listDate = formAddBook.querySelectorAll('[required]')
+//   // console.log(listDate);
+//   listDate.forEach((field) => {
+//     // if (field.value == "") {
+//     //   field.className = "error";
+//     //   countInvalidFields++;
+//     // } else {
+//     //   field.className = "";
+//     // }
     
-    field.checkValidity() ? (cookie = (encodeURIComponent(field.name) + '=' + encodeURIComponent(field.value))) : null;
-    console.log(field +': ' + field.checkValidity());
-  });
-  if (checkboxEbook.checked & (inputEBookFile.files.length == 0) & !checkboxAutoFill.checked) {
-    inputEBookFile.className = 'error';
-    countInvalidFields++;
-  } else inputEBookFile.className = "";
-  if (countInvalidFields) {
-    // pMassage.hidden = false;
-    pMassage.setAttribute("class", "error");
-    pMassage.innerHTML = `** Marked fields (${countInvalidFields}) must be filled out`;
-  } else {
-    pMassage.className = "message";
-    pMassage.innerHTML = 'Данні передані';
-    submit.disabled = true;
-    inputEBookFile.className = "";
-  }
+//     console.log(field.name +': ' + field.checkValidity());
+//   });
+//   if (checkboxEbook.checked & (inputEBookFile.files.length == 0) & !checkboxAutoFill.checked) {
+//     inputEBookFile.className = 'error';
+//     countInvalidFields++;
+//   } else inputEBookFile.className = "";
+//   if (countInvalidFields) {
+//     // pMassage.hidden = false;
+//     pMassage.setAttribute("class", "error");
+//     pMassage.innerHTML = `** Marked fields (${countInvalidFields}) must be filled out`;
+//   } else {
+//     pMassage.className = "message";
+//     pMassage.innerHTML = 'Данні передані';
+//     submit.disabled = true;
+//     inputEBookFile.className = "";
+//   }
+//   return false;
+// }
 
-
-  return false;
+// II - спосіб (за допомогою Promic)
+function validateForm(event) {
+  event.preventDefault(); // заборона стандартної відправки форми 
+  
 }
 
 // const isAutoFill = () => {}
@@ -360,8 +387,7 @@ function isAutoFill() {
     elem.disabled = !elem.disabled;
     elem.className = "";
   }
-  // дозволити/заборонити клікати label "e-Book"
-  checkboxAutoFill.checked ? divCheckboxEBook.onclick = null : divCheckboxEBook.onclick = isEBook;
+
 }
 
 // автозаповнення форми
