@@ -378,7 +378,6 @@ function isAutoFill() {
   submit.disabled = !buttonAuto.disabled;
   checkboxAutoFill.checked = !buttonAuto.disabled;
   pMassage.className = 'message';
-  inputEBookFile.hidden = true;
   // якщо дані в повідомленні були змінені (тобто при авто заповнені було повідомлення що дані відправлені),
   // щоб не було можливості відправити ті самі данні повторно при знятті галочки Автозаповлення - 
   // заблокувати повторне відправлення даних
@@ -409,8 +408,9 @@ function fillData() {
 
   if (dataEBook.ebook) {
     checkboxEbook.checked = true;
-    inputEBookFile.hidden = true;
+    divOpenFile.hidden = false;
     fieldsetEbook.hidden = false;
+    labelFileName.innerHTML = dataEBook.ebook.name;
     preInforEBook.innerHTML = 
     `Path:  <span style='color: lightgrey'>${dataEBook.ebook.path}</span><br>` +
     `Name:  <span style='color: lightgrey'>${dataEBook.ebook.name}</span><br>` +
