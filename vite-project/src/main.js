@@ -1,3 +1,4 @@
+import { fa } from '@faker-js/faker';
 import * as dataFake from './dataFake';
 
 // Створення h1
@@ -165,7 +166,7 @@ selectBookYear.required = true;
 
 // Створення div для книг e-book
 const divEbook = document.createElement("div");
-divEbook.className = "row-center";
+divEbook.className = "row";
 divBookYear.after(divEbook);
 // divEbook.onclick = isEBook;
 
@@ -190,7 +191,8 @@ checkboxEbook.setAttribute("type", "checkbox");
 checkboxEbook.id = "ebook";
 checkboxEbook.name = "ebook";
 checkboxEbook.checked = false;
-checkboxEbook.onclick = isEBook;
+checkboxEbook.onchange = isEBook;
+
 // legendEBook.append(checkboxEbook);
 
 const labelEBook = document.createElement("label");
@@ -202,22 +204,36 @@ labelEBook.style.marginTop = "16px";
 // divCheckboxEBook.append(checkboxEbook, labelEBook);
 divEbook.append(checkboxEbook, labelEBook);
 
+const divOpenFile = document.createElement('div');
+divOpenFile.hidden = true;
+divEbook.append(divOpenFile);
+
 // вибір файлу e-Book
 const inputEBookFile = document.createElement("input");
 inputEBookFile.id = "ebookfile";
 inputEBookFile.name = "ebookfile";
 inputEBookFile.type = 'file';
-// inputFileEBook.disabled = true;
-inputEBookFile.hidden = true;
 inputEBookFile.addEventListener("change", dataEBook);
+inputEBookFile.hidden = true;
 divEbook.append(inputEBookFile);
-// listDate.push(inputFileEBook);
 
+// Кнопка вибору файлу
 const labelOpenFile = document.createElement('label');
 labelOpenFile.setAttribute('for', 'ebookfile');
-labelOpenFile.className = 'label-button';
-labelOpenFile.innerHTML = 'Вибрати файл'
-divEbook.append(labelOpenFile);
+labelOpenFile.className = 'openfile';
+labelOpenFile.innerHTML = 'Вибрати файл';
+// labelOpenFile.hidden = true;
+
+
+// відображення назви вибраного файлу
+const labelFileName = document.createElement('label');
+labelFileName.innerHTML = 'Нічого не вибрано..';
+labelFileName.style.marginLeft = "15px";
+labelFileName.style.marginTop = "16px";
+labelFileName.style.color = 'gray';
+// labelFileName.hidden = true;
+
+divOpenFile.append(labelOpenFile, labelFileName);
 
 const preInforEBook = document.createElement("pre");
 preInforEBook.required = checkboxEbook.checked;
@@ -276,29 +292,14 @@ for (let elem of formAddBook.querySelectorAll('#ebookfile, input[type=text], sel
 
 // показати/сховати додавання файлу e-Book
 function isEBook(e) {
-  inputEBookFile.style.display = 'none';
-  checkboxEbook.checked = inputEBookFile.hidden;
-  inputEBookFile.hidden = !inputEBookFile.hidden;
-  preInforEBook.hidden = inputEBookFile.hidden;
-  fieldsetEbook.hidden = inputEBookFile.hidden;
+  console.log(e.target.checked, !checkboxEbook.checked);
+  divOpenFile.hidden = !checkboxEbook.checked;
+  console.log(labelOpenFile.hidden);
+  // labelFileName.hidden = !checkboxEbook.checked;
+  // preInforEBook.hidden = inputEBookFile.hidden;
+  // fieldsetEbook.hidden = inputEBookFile.hidden;
   // e.preventDefault();
   
-  console.log(e.target);
-}
-
-// створення кнопки для вибору файлу
-const createButtonOpenFile = () => {
-  const buttonOpenFile = document.createElement('input');
-  buttonOpenFile.id = 'fileInput';
-  buttonOpenFile.type = 'file';
-  buttonOpenFile.style.display = 'none';
-
-  const labelOpenFile = document.createAttribute('label');
-  labelOpenFile.setAttribute('for', 'fileInput');
-  labelOpenFile.className = 'button';
-  labelOpenFile.value = 'Вибрати файл';
-
-  divEbook.append(buttonOpenFile, labelOpenFile)
 }
 
 // відображення даних (путь до файлу, ім'я, розмір, формат файлу) eBook
@@ -318,7 +319,10 @@ function dataEBook() {
       `Format:  <span style='color: lightgrey'>${format}</span>`;
 
     preInforEBook.innerHTML = infoEBook;
-  } else console.log("File NOT");
+    labelFileName.innerHTML = inputEBookFile.value.substring(inputEBookFile.value.lastIndexOf("\\") + 1);
+  } else {
+    labelFileName.innerHTML = 'Нічого не вибрано..';
+  }
 }
 
 // перевірка заповнення обов'язкових полів
@@ -360,7 +364,7 @@ function dataEBook() {
 //   return false;
 // }
 
-// II - спосіб (за допомогою Promic)
+// II - спосіб (за допомогою Promise)
 function validateForm(event) {
   event.preventDefault(); // заборона стандартної відправки форми 
   
