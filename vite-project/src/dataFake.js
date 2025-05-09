@@ -2,6 +2,7 @@ import { fakerUK as faker } from '@faker-js/faker';
 
 export function autoDataFill() {
   const book = {
+    id: faker.database.mongodbObjectId(),
     title: faker.book.title(),
     author: faker.person.fullName(),
     year: faker.date.between({from: '1950-01-01', to: Date.now()}).getFullYear(),
@@ -21,4 +22,8 @@ const randomEBook = () => {
       format: faker.book.format()}
 
   } else false;
+}
+
+export function createID() {
+  return faker.database.mongodbObjectId();
 }

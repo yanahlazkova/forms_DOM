@@ -1,4 +1,5 @@
-import { fa } from '@faker-js/faker';
+import { faker, Faker } from '@faker-js/faker';
+import {Book} from './book';
 import * as dataFake from './dataFake';
 
 // Створення h1
@@ -168,13 +169,6 @@ selectBookYear.required = true;
 const divEbook = document.createElement("div");
 divEbook.className = "row";
 divBookYear.after(divEbook);
-// divEbook.onclick = isEBook;
-
-// div для checkbox та label
-// const divCheckboxEBook = document.createElement('div');
-// divCheckboxEBook.style.display = 'inline';
-// divCheckboxEBook.onclick = isEBook;
-// divEbook.append(divCheckboxEBook);
 
 const fieldsetEbook = document.createElement("fieldset");
 fieldsetEbook.className = "row";
@@ -271,16 +265,47 @@ labelCheckboxAutoFill.setAttribute('for', 'autofill');
 labelCheckboxAutoFill.style.marginLeft = '10px';
 divCheckboxAutoFill.append(labelCheckboxAutoFill);
 
+// поле ID
+const divID = document.createElement('div');
+divID.className = 'row';
+
+const divLabelID = formAddBook.getElementsByClassName('col-25')[0].cloneNode(true);
+divLabelID.firstElementChild.innerHTML = 'Book-id:';
+divLabelID.firstElementChild.setAttribute('for', 'id');
+
+const divInputID = formAddBook.getElementsByClassName('col-75')[0].cloneNode(true);
+const inputID = divInputID.firstElementChild;
+inputID.id = 'id';
+inputID.setAttribute('style', 'width: 200px');
+inputID.setAttribute('style', 'width: 200px');
+inputID.placeholder = 'Enter id..';
+const buttonID = document.createElement('button');
+buttonID.type = 'button';
+buttonID.className = 'button';
+buttonID.setAttribute('style', 'margin-top: 0');
+buttonID.innerHTML = 'set ID'
+buttonID.onclick = setID;
+inputID.after(buttonID);
+divID.append(divLabelID, divInputID);
+
+// розділювач
+const hr = document.createElement('hr');
+document.forms[0].firstElementChild.after(hr);
+hr.after(divID);
+
 // кнопка Submit
 const submit = formAddBook.querySelector('input[type=submit]');
 submit.value = 'Save'
 
 // повідомлення <p>
+const divP = document.createElement('div');
+divP.className = 'row';
 const pMassage = document.createElement("p");
 pMassage.className = "message";
 pMassage.value = "** Заповніть обов'язкові поля";
 pMassage.innerHTML = "** Заповніть обов'язкові поля";
-divAutoFill.append(pMassage);
+divP.append(pMassage);
+hr.after(divP);
 
 // для кожного з полів встановити дію при зміні даних та встановити доступною кнопку Save
 for (let elem of formAddBook.querySelectorAll('#ebookfile, input[type=text], select')) {
@@ -292,14 +317,11 @@ for (let elem of formAddBook.querySelectorAll('#ebookfile, input[type=text], sel
 
 // показати/сховати додавання файлу e-Book
 function isEBook(e) {
-  console.log(e.target.checked, !checkboxEbook.checked);
+  // console.log(e.target.checked, !checkboxEbook.checked);
   divOpenFile.hidden = !checkboxEbook.checked;
-  console.log(labelOpenFile.hidden);
-  // labelFileName.hidden = !checkboxEbook.checked;
-  // preInforEBook.hidden = inputEBookFile.hidden;
-  // fieldsetEbook.hidden = inputEBookFile.hidden;
-  // e.preventDefault();
-  
+  // console.log(labelOpenFile.hidden);
+  fieldsetEbook.hidden = divOpenFile.hidden;
+  preInforEBook.hidden = divOpenFile.hidden;
 }
 
 // відображення даних (путь до файлу, ім'я, розмір, формат файлу) eBook
@@ -367,17 +389,26 @@ function dataEBook() {
 // II - спосіб (за допомогою Promise)
 function validateForm(event) {
   event.preventDefault(); // заборона стандартної відправки форми 
-  
+  // за допомогою промісів перевірити коректного заповнення ID
+  document.cookie = `id=${inputID.value};title=${inputBookTitle.value}`;
+  console.log(document.cookie);
 }
 
+function validateID() {
+  return new Promise((resolve, reject) => {
+    if (inputID.value != document.cookie['id']) {
+      resolve('ID підтверджено')
+    } else reject('id вже існує');
+  })
+}
 // const isAutoFill = () => {}
 
 // автозаповнення
 function isAutoFill() {
   buttonAuto.disabled = !buttonAuto.disabled;
-  submit.disabled = !buttonAuto.disabled;
-  checkboxAutoFill.checked = !buttonAuto.disabled;
+  submit.disabled = buttonID.disabled = !buttonAuto.disabled;
   pMassage.className = 'message';
+  
   // якщо дані в повідомленні були змінені (тобто при авто заповнені було повідомлення що дані відправлені),
   // щоб не було можливості відправити ті самі данні повторно при знятті галочки Автозаповлення - 
   // заблокувати повторне відправлення даних
@@ -390,7 +421,7 @@ function isAutoFill() {
     elem.disabled = !elem.disabled;
     elem.className = "";
   }
-
+  
 }
 
 // автозаповнення форми
@@ -400,8 +431,7 @@ function fillData() {
   const dataEBook = dataFake.autoDataFill();
   console.log('📚 Книга:', dataEBook);
 
-  // const cookie = document.cookie;
-
+  inputID.value = dataEBook.id;
   inputBookTitle.value = dataEBook['title'];
   inputBookAuthor.value = dataEBook.author;
   selectBookYear.value = dataEBook.year;
@@ -421,6 +451,7 @@ function fillData() {
 
   } else {
     checkboxEbook.checked = false;
+    divOpenFile.hidden = true;
     fieldsetEbook.hidden = true;
     preInforEBook.hidden = true;
   }
@@ -437,6 +468,10 @@ function fillData() {
   isGenre.selected = true;
 }
 
+function setID() {
+  console.log(dataFake.createID());
+  inputID.value = dataFake.createID();
+}
 // let script = document.createElement('script');
 
 // // мы можем загрузить любой скрипт с любого домена
