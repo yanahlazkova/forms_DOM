@@ -1,7 +1,5 @@
 // COOKIES
 
-import { nb_NO } from "@faker-js/faker";
-
 // встановлення кукі (зберігає встановлений колір тексту)
 export function setCookies(e, cname = "text_color", cvalue = "green") {
   // const
@@ -14,10 +12,15 @@ export function setCookies(e, cname = "text_color", cvalue = "green") {
 // отримання кукі
 export function getCookiesColor(cname) {
   const arrayCookies = document.cookie.split(";"); // створимо масив
-  const cookie = arrayCookies.filter((value) => value.split('=')[0].trim() == cname);
-//   cookie.split('=')[1]
-//   console.log(cookie[0].split('=')[1]);
-  return cookie[0].split('=')[1]
+  if (arrayCookies) {
+    const cookie = arrayCookies.filter(
+      (value) => value.split("=")[0].trim() == cname
+    );
+    //   console.log(cookie[0].split('=')[1]);
+    console.log("cookie", cookie);
+    return cookie.length ? cookie[0].split("=")[1] : NaN;
+  }
+  return NaN;
 }
 
 function findCookie(c, cname) {

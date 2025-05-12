@@ -1,23 +1,22 @@
 import * as dataFake from "./dataFake";
-import * as methodsCookies from './methods_Coockies'
+import * as methodsCookies from "./methods_Coockies";
 
 // setCookies();
-let defoltTextColor = 'green'; // колір тексту позамовчуваню
+let defaultTextColor = "green"; // колір тексту позамовчуваню
 
 const radioBlue = document.getElementById("blue");
 const radioGreen = document.getElementById("green");
 
 // події при зміні Radio
-const radios = document.querySelectorAll('input[type=radio][name=text_color]');
-radios.forEach(radio => {
-  radio.addEventListener('change', (event) => {
+const radios = document.querySelectorAll("input[type=radio][name=text_color]");
+radios.forEach((radio) => {
+  radio.addEventListener("change", (event) => {
     // додати колір у файл cookies
-    document.cookie = event.target.name + '=' + event.target.value;
+    document.cookie = event.target.name + "=" + event.target.value;
     // змінити колір
-    changeTextColor(event.target.value);
-  })
-})
-
+    setTextColor(event.target.value);
+  });
+});
 
 // Створення h1
 const h1 = document.createElement("h1");
@@ -34,16 +33,19 @@ const divContainer = document.body.getElementsByClassName("container")[0];
 table.before(h1, divContainer);
 
 // колір тексту в контейнері
-// divContainer.style.color = defoltTextColor; 
-document.addEventListener('DOMContentLoaded', () => {
-  const textColor = methodsCookies.getCookiesColor('text_color') || 'red';
+// divContainer.style.color = defoltTextColor;
+document.addEventListener("DOMContentLoaded", () => {
+  const col = methodsCookies.getCookiesColor("text_color");
+  console.log(document.cookie);
+  console.log("col: ", col);
+  const textColor = col || defaultTextColor;
   console.log(textColor);
-  changeTextColor(textColor);
-  document.getElementById(textColor).checked = true;
+  setTextColor(textColor);
 });
 
-function changeTextColor(textColor) {
+function setTextColor(textColor) {
   divContainer.style.color = textColor;
+  document.getElementById(textColor).checked = true;
 }
 
 // II - варіант
@@ -523,5 +525,3 @@ function setID() {
 // script.onerror = function() {
 //   console.log('Error of load: ' + this.src);
 // }
-
-
