@@ -1,6 +1,6 @@
-import { faker, Faker } from '@faker-js/faker';
-import {Book} from './book';
-import * as dataFake from './dataFake';
+import * as dataFake from "./dataFake";
+
+setCookies();
 
 // Створення h1
 const h1 = document.createElement("h1");
@@ -55,9 +55,6 @@ links.forEach((link) =>
     : (link.style.color = "orange")
 );
 
-// список полів, обов'язкових для заповнення
-// const listDate = [];
-
 // змінемо данні форми AddBook вручну
 divContainer.style.color = "green";
 
@@ -77,8 +74,6 @@ inputBookTitle.onblur = function () {
     inputBookTitle.className = "";
   }
 };
-
-// listDate.push(inputBookTitle);
 
 // Author
 const labelBookAuthor = formAddBook.querySelector('label[for="author"');
@@ -125,7 +120,7 @@ selectBookGenre.append(optionBookGenreHorror);
 
 const optionBook = document.createElement("option");
 optionBook.defaultSelected = true;
-optionBook.value = ''; //'empty';
+optionBook.value = ""; //'empty';
 optionBook.innerHTML = "";
 selectBookGenre.prepend(optionBook);
 
@@ -191,14 +186,14 @@ checkboxEbook.onchange = isEBook;
 
 const labelEBook = document.createElement("label");
 labelEBook.innerHTML = "e-Book";
-labelEBook.setAttribute('for', 'ebook');
+labelEBook.setAttribute("for", "ebook");
 labelEBook.style.marginLeft = "5px";
 labelEBook.style.marginTop = "16px";
 // labelEBook.onclick = isEBook;
 // divCheckboxEBook.append(checkboxEbook, labelEBook);
 divEbook.append(checkboxEbook, labelEBook);
 
-const divOpenFile = document.createElement('div');
+const divOpenFile = document.createElement("div");
 divOpenFile.hidden = true;
 divEbook.append(divOpenFile);
 
@@ -206,25 +201,24 @@ divEbook.append(divOpenFile);
 const inputEBookFile = document.createElement("input");
 inputEBookFile.id = "ebookfile";
 inputEBookFile.name = "ebookfile";
-inputEBookFile.type = 'file';
+inputEBookFile.type = "file";
 inputEBookFile.addEventListener("change", dataEBook);
 inputEBookFile.hidden = true;
 divEbook.append(inputEBookFile);
 
 // Кнопка вибору файлу
-const labelOpenFile = document.createElement('label');
-labelOpenFile.setAttribute('for', 'ebookfile');
-labelOpenFile.className = 'openfile';
-labelOpenFile.innerHTML = 'Вибрати файл';
+const labelOpenFile = document.createElement("label");
+labelOpenFile.setAttribute("for", "ebookfile");
+labelOpenFile.className = "openfile";
+labelOpenFile.innerHTML = "Вибрати файл";
 // labelOpenFile.hidden = true;
 
-
 // відображення назви вибраного файлу
-const labelFileName = document.createElement('label');
-labelFileName.innerHTML = 'Нічого не вибрано..';
+const labelFileName = document.createElement("label");
+labelFileName.innerHTML = "Нічого не вибрано..";
 labelFileName.style.marginLeft = "15px";
 labelFileName.style.marginTop = "16px";
-labelFileName.style.color = 'gray';
+labelFileName.style.color = "gray";
 // labelFileName.hidden = true;
 
 divOpenFile.append(labelOpenFile, labelFileName);
@@ -234,72 +228,77 @@ preInforEBook.required = checkboxEbook.checked;
 legendEBook.after(preInforEBook);
 
 // створення div та кнопки для auto-заповнення полів
-const divAutoFill = document.createElement('div');
-divAutoFill.className = 'row';
+const divAutoFill = document.createElement("div");
+divAutoFill.className = "row";
 formAddBook.prepend(divAutoFill);
 
 // const buttonAuto = formAddBook.querySelector('input[type=submit]').cloneNode(true);// document.createElement('input');
-const buttonAuto = document.createElement('button');
+const buttonAuto = document.createElement("button");
 buttonAuto.onclick = fillData;
-buttonAuto.innerHTML = 'Auto fill';
-buttonAuto.setAttribute('type', 'button');
+buttonAuto.innerHTML = "Auto fill";
+buttonAuto.setAttribute("type", "button");
 buttonAuto.disabled = true;
 divAutoFill.append(buttonAuto);
 
 // checkbox автозаповнення
-const divCheckboxAutoFill = document.createElement('div');
+const divCheckboxAutoFill = document.createElement("div");
 // divCheckboxAutoFill.onclick = isAutoFill;
 divAutoFill.append(divCheckboxAutoFill);
 
-const checkboxAutoFill = document.createElement('input'); // checkboxEbook.cloneNode(false);
-checkboxAutoFill.type = 'checkbox';
-checkboxAutoFill.id = 'autofill';
-checkboxAutoFill.name = 'autofill';
+const checkboxAutoFill = document.createElement("input"); // checkboxEbook.cloneNode(false);
+checkboxAutoFill.type = "checkbox";
+checkboxAutoFill.id = "autofill";
+checkboxAutoFill.name = "autofill";
 checkboxAutoFill.onclick = isAutoFill;
 checkboxAutoFill.checked = false;
 divCheckboxAutoFill.append(checkboxAutoFill);
 
-const labelCheckboxAutoFill = document.createElement('label');
-labelCheckboxAutoFill.innerHTML = 'Автоматичне заповнення';
-labelCheckboxAutoFill.setAttribute('for', 'autofill');
-labelCheckboxAutoFill.style.marginLeft = '10px';
+const labelCheckboxAutoFill = document.createElement("label");
+labelCheckboxAutoFill.innerHTML = "Автоматичне заповнення";
+labelCheckboxAutoFill.setAttribute("for", "autofill");
+labelCheckboxAutoFill.style.marginLeft = "10px";
 divCheckboxAutoFill.append(labelCheckboxAutoFill);
 
 // поле ID
-const divID = document.createElement('div');
-divID.className = 'row';
+const divID = document.createElement("div");
+divID.className = "row";
 
-const divLabelID = formAddBook.getElementsByClassName('col-25')[0].cloneNode(true);
-divLabelID.firstElementChild.innerHTML = 'Book-id:';
-divLabelID.firstElementChild.setAttribute('for', 'id');
+const divLabelID = formAddBook
+  .getElementsByClassName("col-25")[0]
+  .cloneNode(true);
+divLabelID.firstElementChild.innerHTML = "Book-id:";
+divLabelID.firstElementChild.setAttribute("for", "id");
 
-const divInputID = formAddBook.getElementsByClassName('col-75')[0].cloneNode(true);
+const divInputID = formAddBook
+  .getElementsByClassName("col-75")[0]
+  .cloneNode(true);
 const inputID = divInputID.firstElementChild;
-inputID.id = 'id';
-inputID.setAttribute('style', 'width: 200px');
-inputID.setAttribute('style', 'width: 200px');
-inputID.placeholder = 'Enter id..';
-const buttonID = document.createElement('button');
-buttonID.type = 'button';
-buttonID.className = 'button';
-buttonID.setAttribute('style', 'margin-top: 0');
-buttonID.innerHTML = 'set ID'
+inputID.required = false;
+inputID.id = "id";
+inputID.setAttribute("style", "width: 200px");
+inputID.setAttribute("style", "width: 200px");
+inputID.placeholder = "Enter id..";
+const buttonID = document.createElement("button");
+buttonID.type = "button";
+buttonID.className = "button";
+buttonID.setAttribute("style", "margin-top: 0");
+buttonID.innerHTML = "set ID";
 buttonID.onclick = setID;
 inputID.after(buttonID);
 divID.append(divLabelID, divInputID);
 
 // розділювач
-const hr = document.createElement('hr');
+const hr = document.createElement("hr");
 document.forms[0].firstElementChild.after(hr);
 hr.after(divID);
 
 // кнопка Submit
-const submit = formAddBook.querySelector('input[type=submit]');
-submit.value = 'Save'
+const submit = formAddBook.querySelector("input[type=submit]");
+submit.value = "Save";
 
 // повідомлення <p>
-const divP = document.createElement('div');
-divP.className = 'row';
+const divP = document.createElement("div");
+divP.className = "row";
 const pMassage = document.createElement("p");
 pMassage.className = "message";
 pMassage.value = "** Заповніть обов'язкові поля";
@@ -308,10 +307,13 @@ divP.append(pMassage);
 hr.after(divP);
 
 // для кожного з полів встановити дію при зміні даних та встановити доступною кнопку Save
-for (let elem of formAddBook.querySelectorAll('#ebookfile, input[type=text], select')) {
+for (let elem of formAddBook.querySelectorAll(
+  "#ebookfile, input[type=text], select"
+)) {
   elem.onchange = () => {
     if (submit.disabled) {
-    submit.disabled = !submit.disabled;}
+      submit.disabled = !submit.disabled;
+    }
   };
 }
 
@@ -341,9 +343,11 @@ function dataEBook() {
       `Format:  <span style='color: lightgrey'>${format}</span>`;
 
     preInforEBook.innerHTML = infoEBook;
-    labelFileName.innerHTML = inputEBookFile.value.substring(inputEBookFile.value.lastIndexOf("\\") + 1);
+    labelFileName.innerHTML = inputEBookFile.value.substring(
+      inputEBookFile.value.lastIndexOf("\\") + 1
+    );
   } else {
-    labelFileName.innerHTML = 'Нічого не вибрано..';
+    labelFileName.innerHTML = "Нічого не вибрано..";
   }
 }
 
@@ -353,7 +357,7 @@ function dataEBook() {
 
 // function validateForm(e) {
 //   // console.log('validate', e);
-  
+
 //   let countInvalidFields = 0;
 
 // // зміна класу незаповнених полів (border color - red)
@@ -366,7 +370,7 @@ function dataEBook() {
 //     // } else {
 //     //   field.className = "";
 //     // }
-    
+
 //     console.log(field.name +': ' + field.checkValidity());
 //   });
 //   if (checkboxEbook.checked & (inputEBookFile.files.length == 0) & !checkboxAutoFill.checked) {
@@ -388,18 +392,20 @@ function dataEBook() {
 
 // II - спосіб (за допомогою Promise)
 function validateForm(event) {
-  event.preventDefault(); // заборона стандартної відправки форми 
-  // за допомогою промісів перевірити коректного заповнення ID
-  document.cookie = `id=${inputID.value};title=${inputBookTitle.value}`;
-  console.log(document.cookie);
+  event.preventDefault(); // заборона стандартної відправки форми
+  // за допомогою промісів перевірити заповнення ID
+  validateID().then(
+    (result) => alert("Додано"),
+    (error) => alert("Id не заповнено")
+  );
 }
 
 function validateID() {
   return new Promise((resolve, reject) => {
-    if (inputID.value != document.cookie['id']) {
-      resolve('ID підтверджено')
-    } else reject('id вже існує');
-  })
+    if (inputID.value != "") {
+      resolve("Заповнено");
+    } else reject("id не заповнено");
+  });
 }
 // const isAutoFill = () => {}
 
@@ -407,21 +413,22 @@ function validateID() {
 function isAutoFill() {
   buttonAuto.disabled = !buttonAuto.disabled;
   submit.disabled = buttonID.disabled = !buttonAuto.disabled;
-  pMassage.className = 'message';
-  
+  pMassage.className = "message";
+
   // якщо дані в повідомленні були змінені (тобто при авто заповнені було повідомлення що дані відправлені),
-  // щоб не було можливості відправити ті самі данні повторно при знятті галочки Автозаповлення - 
+  // щоб не було можливості відправити ті самі данні повторно при знятті галочки Автозаповлення -
   // заблокувати повторне відправлення даних
   if (pMassage.innerHTML != pMassage.value) {
     pMassage.innerHTML = pMassage.value;
     submit.disabled = true;
   }
 
-  for (let elem of formAddBook.querySelectorAll('#ebook, input[type=text], select')) {
+  for (let elem of formAddBook.querySelectorAll(
+    "#ebook, input[type=text], select"
+  )) {
     elem.disabled = !elem.disabled;
     elem.className = "";
   }
-  
 }
 
 // автозаповнення форми
@@ -429,10 +436,10 @@ function fillData() {
   submit.disabled = false;
   pMassage.innerHTML = pMassage.value;
   const dataEBook = dataFake.autoDataFill();
-  console.log('📚 Книга:', dataEBook);
+  console.log("📚 Книга:", dataEBook);
 
   inputID.value = dataEBook.id;
-  inputBookTitle.value = dataEBook['title'];
+  inputBookTitle.value = dataEBook["title"];
   inputBookAuthor.value = dataEBook.author;
   selectBookYear.value = dataEBook.year;
 
@@ -441,14 +448,13 @@ function fillData() {
     divOpenFile.hidden = false;
     fieldsetEbook.hidden = false;
     labelFileName.innerHTML = dataEBook.ebook.name;
-    preInforEBook.innerHTML = 
-    `Path:  <span style='color: lightgrey'>${dataEBook.ebook.path}</span><br>` +
-    `Name:  <span style='color: lightgrey'>${dataEBook.ebook.name}</span><br>` +
-    `Size:  <span style='color: lightgrey'>${dataEBook.ebook.size}</span> bites<br>` +
-    `Format:  <span style='color: lightgrey'>${dataEBook.ebook.format}</span>`;
+    preInforEBook.innerHTML =
+      `Path:  <span style='color: lightgrey'>${dataEBook.ebook.path}</span><br>` +
+      `Name:  <span style='color: lightgrey'>${dataEBook.ebook.name}</span><br>` +
+      `Size:  <span style='color: lightgrey'>${dataEBook.ebook.size}</span> bites<br>` +
+      `Format:  <span style='color: lightgrey'>${dataEBook.ebook.format}</span>`;
     preInforEBook.hidden = false;
-    console.log('eBook', dataEBook.ebook.path);
-
+    console.log("eBook", dataEBook.ebook.path);
   } else {
     checkboxEbook.checked = false;
     divOpenFile.hidden = true;
@@ -457,14 +463,16 @@ function fillData() {
   }
 
   // перевірка, чи існує вказаний жанр у списку вибору
-  let isGenre = selectBookGenre.querySelector(`[value="${dataEBook.genre.toLowerCase()}"]`) // arrayGenre.indexOf(dataBook.genre);
+  let isGenre = selectBookGenre.querySelector(
+    `[value="${dataEBook.genre.toLowerCase()}"]`
+  ); // arrayGenre.indexOf(dataBook.genre);
   console.log(isGenre);
-   if (isGenre == null) {
-    isGenre = optionBookGenreDetective.cloneNode(false); 
+  if (isGenre == null) {
+    isGenre = optionBookGenreDetective.cloneNode(false);
     isGenre.innerHTML = dataEBook.genre;
     isGenre.value = dataEBook.genre.toLocaleLowerCase();
     selectBookGenre.append(isGenre);
-  } 
+  }
   isGenre.selected = true;
 }
 
@@ -487,3 +495,28 @@ function setID() {
 // script.onerror = function() {
 //   console.log('Error of load: ' + this.src);
 // }
+
+const radioBlue = (document.getElementById("blue").onclick = setCookies);
+const radioGreen = (document.getElementById("green").onclick = setCookies);
+
+// встановлення кукі (зберігає встановлений колір тексту)
+function setCookies(e, cname = "text_color", cvalue = "green") {
+  if (!e) {
+    document.cookie =
+      cname + "=" + (!document.cookie.length ? cvalue : getCookiesColor(cname));
+  } else document.cookie = cname + "=" + e.target.value;
+}
+
+// отримання кукі
+function getCookiesColor(cname) {
+  console.log(document.cookie);
+  const arrayCookies = document.cookie.split(";");
+  let cvalue = "";
+  arrayCookies.forEach((c) => (cvalue = findCookie(c.split("="), cname)));
+  // console.log("cvalue =", cvalue);
+  return cvalue;
+}
+
+function findCookie(c, cname) {
+  return c[0].indexOf(cname) >= 0 ? c[1] : "";
+}
