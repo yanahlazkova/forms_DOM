@@ -1,6 +1,6 @@
 h1 {
     text-align: center;
-    color: green;
+    /* color: green; */
 }
 
 * {
@@ -29,7 +29,7 @@ input[type=checkbox] {
 label {
   padding: 12px 12px 12px 0;
   display: inline-block;
-  color: 'green';
+  /* color: 'green'; */
 }
 
 input[type=submit], button[type=button] {

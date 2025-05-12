@@ -1,6 +1,23 @@
 import * as dataFake from "./dataFake";
+import * as methodsCookies from './methods_Coockies'
 
-setCookies();
+// setCookies();
+let defoltTextColor = 'green'; // колір тексту позамовчуваню
+
+const radioBlue = document.getElementById("blue");
+const radioGreen = document.getElementById("green");
+
+// події при зміні Radio
+const radios = document.querySelectorAll('input[type=radio][name=text_color]');
+radios.forEach(radio => {
+  radio.addEventListener('change', (event) => {
+    // додати колір у файл cookies
+    document.cookie = event.target.name + '=' + event.target.value;
+    // змінити колір
+    changeTextColor(event.target.value);
+  })
+})
+
 
 // Створення h1
 const h1 = document.createElement("h1");
@@ -15,7 +32,19 @@ const table = document.body.querySelectorAll("table")[0]; // firstElementChild.n
 // розміщення h1 в горі сторінки
 const divContainer = document.body.getElementsByClassName("container")[0];
 table.before(h1, divContainer);
-// console.log(h1.attributes);
+
+// колір тексту в контейнері
+// divContainer.style.color = defoltTextColor; 
+document.addEventListener('DOMContentLoaded', () => {
+  const textColor = methodsCookies.getCookiesColor('text_color') || 'red';
+  console.log(textColor);
+  changeTextColor(textColor);
+  document.getElementById(textColor).checked = true;
+});
+
+function changeTextColor(textColor) {
+  divContainer.style.color = textColor;
+}
 
 // II - варіант
 // const table = document.getElementById('table');
@@ -56,7 +85,6 @@ links.forEach((link) =>
 );
 
 // змінемо данні форми AddBook вручну
-divContainer.style.color = "green";
 
 // const formAddBook = document.querySelector('form.AddBook');
 const formAddBook = document.forms.addbook;
@@ -496,27 +524,4 @@ function setID() {
 //   console.log('Error of load: ' + this.src);
 // }
 
-const radioBlue = (document.getElementById("blue").onclick = setCookies);
-const radioGreen = (document.getElementById("green").onclick = setCookies);
 
-// встановлення кукі (зберігає встановлений колір тексту)
-function setCookies(e, cname = "text_color", cvalue = "green") {
-  if (!e) {
-    document.cookie =
-      cname + "=" + (!document.cookie.length ? cvalue : getCookiesColor(cname));
-  } else document.cookie = cname + "=" + e.target.value;
-}
-
-// отримання кукі
-function getCookiesColor(cname) {
-  console.log(document.cookie);
-  const arrayCookies = document.cookie.split(";");
-  let cvalue = "";
-  arrayCookies.forEach((c) => (cvalue = findCookie(c.split("="), cname)));
-  // console.log("cvalue =", cvalue);
-  return cvalue;
-}
-
-function findCookie(c, cname) {
-  return c[0].indexOf(cname) >= 0 ? c[1] : "";
-}
