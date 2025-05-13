@@ -23,6 +23,18 @@ export function getCookiesColor(cname) {
   return NaN;
 }
 
-function findCookie(c, cname) {
-  return c[0].indexOf(cname) >= 0 ? c[1] : "";
+
+// Local Storage
+
+export function setLocalStorage(key, data){
+  localStorage.setItem(key, JSON.stringify(data));
+  console.log(localStorage.getItem(key));
+}
+
+export function getLocalStorage(key) {
+  return localStorage.getItem(key);
+}
+
+export function removeLocalStorage(key) {
+  localStorage.removeItem(key);
 }

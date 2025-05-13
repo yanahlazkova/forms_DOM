@@ -12,14 +12,14 @@
     <div>
         <input type="radio" id="green" name="text_color" value="green">
         <label for="green" style="color: green;">Green color</label>
-        <input type="radio" id="blue" name="text_color" value="blue">
-        <label for="blue" style="color: blue;">Blue color</label>
+        <input type="radio" id="blue" name="text_color" value="lightblue">
+        <label for="blue" style="color: lightblue;">Blue color</label>
     </div>
-    <div>
+    <!-- <div>
         <label id='labelfileInput' for="fileInput">Вибрати файл</label>
         <span id="fileName" class="file-name">Файл не вибрано</span>
         <input type="file" id="fileInput" style="display: none;" />
-    </div>
+    </div> -->
     <div class="container">
         <!-- <h1 id="bg-grey">Library system</h1> -->
         <div class="formsAdding">
@@ -168,18 +168,18 @@
 
 
     <script>
-        const fileInput = document.getElementById("fileInput");
-        const fileNameDisplay = document.getElementById("fileName");
-        // const fileUploadButton = document.querySelector(".file-upload-button");
+        // const fileInput = document.getElementById("fileInput");
+        // const fileNameDisplay = document.getElementById("fileName");
+        // // const fileUploadButton = document.querySelector(".file-upload-button");
 
-        fileInput.addEventListener("change", () => {
-            if (fileInput.files.length > 0) {
-                const fileName = fileInput.files[0].name;
-                fileNameDisplay.textContent = fileName;
-            } else {
-                fileNameDisplay.textContent = "Файл не вибрано";
-            }
-        });
+        // fileInput.addEventListener("change", () => {
+        //     if (fileInput.files.length > 0) {
+        //         const fileName = fileInput.files[0].name;
+        //         fileNameDisplay.textContent = fileName;
+        //     } else {
+        //         fileNameDisplay.textContent = "Файл не вибрано";
+        //     }
+        // });
 
         // fileUploadButton.addEventListener("click", () => {
         //     fileInput.click();

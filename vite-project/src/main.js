@@ -1,11 +1,11 @@
 import * as dataFake from "./dataFake";
-import * as methodsCookies from "./methods_Coockies";
+import * as webStorage from "./Coockies_LocalStorage";
 
 // setCookies();
 let defaultTextColor = "green"; // колір тексту позамовчуваню
 
-const radioBlue = document.getElementById("blue");
-const radioGreen = document.getElementById("green");
+// const radioBlue = document.getElementById("blue");
+// const radioGreen = document.getElementById("green");
 
 // події при зміні Radio
 const radios = document.querySelectorAll("input[type=radio][name=text_color]");
@@ -35,17 +35,20 @@ table.before(h1, divContainer);
 // колір тексту в контейнері
 // divContainer.style.color = defoltTextColor;
 document.addEventListener("DOMContentLoaded", () => {
-  const col = methodsCookies.getCookiesColor("text_color");
-  console.log(document.cookie);
-  console.log("col: ", col);
-  const textColor = col || defaultTextColor;
-  console.log(textColor);
-  setTextColor(textColor);
+  setTextColor();
+  // заповнити поля останніми даними, які не були збережені минулого разу
+  const noSavedData = webStorage.getLocalStorage('no_saved_data');
+  if (noSavedData) {
+    fillData();
+  }
 });
 
-function setTextColor(textColor) {
+function setTextColor() {
+  const col = webStorage.getCookiesColor("text_color");
+  const textColor = col || defaultTextColor;
+  console.log(textColor);
   divContainer.style.color = textColor;
-  document.getElementById(textColor).checked = true;
+  document.querySelector(`[value=${textColor}]`).checked = true;
 }
 
 // II - варіант
@@ -425,18 +428,35 @@ function validateForm(event) {
   event.preventDefault(); // заборона стандартної відправки форми
   // за допомогою промісів перевірити заповнення ID
   validateID().then(
-    (result) => alert("Додано"),
-    (error) => alert("Id не заповнено")
+    (result) => {
+      alert(result);
+      // записати данні
+      toSaveData();
+    },
+    (error) => alert(error)
   );
 }
 
 function validateID() {
   return new Promise((resolve, reject) => {
     if (inputID.value != "") {
-      resolve("Заповнено");
+      resolve("Додано");
     } else reject("id не заповнено");
   });
 }
+
+function toSaveData() {
+  // додати збережені дані у localStorage (key=saved_data) 
+    // і видалити з key=field_data
+    const noSavedData = webStorage.getLocalStorage('no_saved_data')
+    const savedData = webStorage.getLocalStorage('saved_data');
+    console.log(noSavedData.id);
+    if (savedData) {
+      webStorage.removeLocalStorage('no_saved_data');
+      // savedData.id = noSavedData.id
+    }
+}
+
 // const isAutoFill = () => {}
 
 // автозаповнення
@@ -466,7 +486,7 @@ function fillData() {
   submit.disabled = false;
   pMassage.innerHTML = pMassage.value;
   const dataEBook = dataFake.autoDataFill();
-  console.log("📚 Книга:", dataEBook);
+  // console.log("📚 Книга:", dataEBook);
 
   inputID.value = dataEBook.id;
   inputBookTitle.value = dataEBook["title"];
@@ -504,6 +524,9 @@ function fillData() {
     selectBookGenre.append(isGenre);
   }
   isGenre.selected = true;
+
+  // додати дані у LocalStorage з ключем field_data
+  webStorage.setLocalStorage('field_data', dataEBook);
 }
 
 function setID() {
