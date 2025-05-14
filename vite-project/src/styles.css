@@ -96,16 +96,17 @@ table, th, td {
 }
 
 input.error, select.error {
-  border-color: red;
+  border: 1px solid red;
 }
 
-p.message {
+span.message {
   color: gray;
   float: left;
 }
 
-.error {
+span.error {
   color: red;
+  /* border: 1px solid red; */
 }
 
 .openfile {

@@ -93,7 +93,7 @@ links.forEach((link) =>
 
 // const formAddBook = document.querySelector('form.AddBook');
 const formAddBook = document.forms.addbook;
-formAddBook.onsubmit = validateForm;
+formAddBook.onsubmit = saveData;
 
 // Title
 const labelBookTitle = formAddBook.querySelector('label[for="bTitle"]');
@@ -101,9 +101,12 @@ labelBookTitle.innerHTML = "Book Title:";
 
 const inputBookTitle = formAddBook.querySelector('input[id="bTitle"]');
 inputBookTitle.setAttribute("placeholder", "Title of the book..");
-inputBookTitle.required = true;
+inputBookTitle.className = '';
+// inputBookTitle.required = true;
 inputBookTitle.onblur = function () {
   if (inputBookTitle.value != "") {
+    spanMessage.className = 'message';
+    spanMessage.innerHTML = spanMessage.value;
     inputBookTitle.className = "";
   }
 };
@@ -114,7 +117,7 @@ labelBookAuthor.innerHTML = "Author:";
 
 const inputBookAuthor = formAddBook.querySelector("#author");
 inputBookAuthor.setAttribute("placeholder", "Author..");
-inputBookAuthor.required = true;
+// inputBookAuthor.required = true;
 // listDate.push(inputBookAuthor);
 
 // Видалимо div з тегом area
@@ -131,7 +134,7 @@ labelBookGenre.innerHTML = "Genre:";
 const selectBookGenre = formAddBook.querySelector("#country");
 selectBookGenre.id = "genre";
 selectBookGenre.name = "genre";
-selectBookGenre.required = true;
+// selectBookGenre.required = true;
 // listDate.push(selectBookGenre);
 
 const optionBookGenreFantasy = selectBookGenre.firstElementChild;
@@ -184,7 +187,7 @@ for (let optionYear = 2025; optionYear > 1950; optionYear--) {
 
 divBookYear.append(selectBookYear);
 inputBookAuthor.parentElement.parentElement.after(divBookYear);
-selectBookYear.required = true;
+// selectBookYear.required = true;
 // listDate.push(selectBookYear);
 
 // отримаємо div кнопки Submit та розмістимо внизу форми
@@ -248,7 +251,8 @@ labelOpenFile.innerHTML = "Вибрати файл";
 
 // відображення назви вибраного файлу
 const labelFileName = document.createElement("label");
-labelFileName.innerHTML = "Нічого не вибрано..";
+labelFileName.name = 'filename';
+labelFileName.value = "Нічого не вибрано..";
 labelFileName.style.marginLeft = "15px";
 labelFileName.style.marginTop = "16px";
 labelFileName.style.color = "gray";
@@ -257,7 +261,7 @@ labelFileName.style.color = "gray";
 divOpenFile.append(labelOpenFile, labelFileName);
 
 const preInforEBook = document.createElement("pre");
-preInforEBook.required = checkboxEbook.checked;
+// preInforEBook.required = checkboxEbook.checked;
 legendEBook.after(preInforEBook);
 
 // створення div та кнопки для auto-заповнення полів
@@ -306,9 +310,9 @@ const divInputID = formAddBook
   .getElementsByClassName("col-75")[0]
   .cloneNode(true);
 const inputID = divInputID.firstElementChild;
-inputID.required = false;
+// inputID.required = false;
+inputID.name = 'idbook';
 inputID.id = "id";
-inputID.setAttribute("style", "width: 200px");
 inputID.setAttribute("style", "width: 200px");
 inputID.placeholder = "Enter id..";
 const buttonID = document.createElement("button");
@@ -332,11 +336,11 @@ submit.value = "Save";
 // повідомлення <p>
 const divP = document.createElement("div");
 divP.className = "row";
-const pMassage = document.createElement("p");
-pMassage.className = "message";
-pMassage.value = "** Заповніть обов'язкові поля";
-pMassage.innerHTML = "** Заповніть обов'язкові поля";
-divP.append(pMassage);
+const spanMessage = document.createElement("span");
+spanMessage.className = "message";
+spanMessage.value = "** Заповніть обов'язкові поля";
+spanMessage.innerHTML = "** Заповніть обов'язкові поля";
+divP.append(spanMessage);
 hr.after(divP);
 
 // для кожного з полів встановити дію при зміні даних та встановити доступною кнопку Save
@@ -380,8 +384,27 @@ function dataEBook() {
       inputEBookFile.value.lastIndexOf("\\") + 1
     );
   } else {
-    labelFileName.innerHTML = "Нічого не вибрано..";
+    // labelFileName.innerHTML = "Нічого не вибрано..";
+    labelFileName.innerHTML = labelFileName.value;
   }
+}
+
+// збереження даних форми
+function saveData(event) {
+  event.preventDefault(); // заборона стандартної відправки форми
+  // валідація форми
+  validateForm().then(listValidateFields => {
+    alert('Дані збережені..');
+    spanMessage.className = 'message';
+    spanMessage.innerHTML = spanMessage.value;
+    // видалити незбереженні дані
+
+    // додати нові данні до збережених
+  })
+  .catch(errors => {
+    spanMessage.setAttribute("class", "error");
+    spanMessage.innerHTML = `** Виділені поля (${errors}шт.) повинні бути заповнені`;
+  })
 }
 
 // перевірка заповнення обов'язкових полів
@@ -395,8 +418,8 @@ function dataEBook() {
 
 // // зміна класу незаповнених полів (border color - red)
 //   const listDate = formAddBook.querySelectorAll('[required]')
-//   // console.log(listDate);
-//   listDate.forEach((field) => {
+//   // console.log(listData);
+//   listData.forEach((field) => {
 //     // if (field.value == "") {
 //     //   field.className = "error";
 //     //   countInvalidFields++;
@@ -424,25 +447,40 @@ function dataEBook() {
 // }
 
 // II - спосіб (за допомогою Promise)
-function validateForm(event) {
-  event.preventDefault(); // заборона стандартної відправки форми
-  // за допомогою промісів перевірити заповнення ID
-  validateID().then(
-    (result) => {
-      alert(result);
-      // записати данні
-      toSaveData();
-    },
-    (error) => alert(error)
-  );
+function validateForm() {
+  // за допомогою промісів перевірити валідацію полів
+  return new Promise ((resolve, reject) => {
+    let errors = 0; // для рахування помилок
+    // валідація полів
+    const listValidateFields = [inputID, inputBookTitle, inputBookAuthor];
+    if (checkboxEbook.checked) listValidateFields.push(labelFileName);
+
+    listValidateFields.forEach(field => !validateFieldEmptyValues(field) ? errors++ : NaN);
+
+    if (errors > 0) {
+      reject(errors);
+      
+    } else {
+      resolve(listValidateFields);
+      
+    }
+  })
 }
 
-function validateID() {
-  return new Promise((resolve, reject) => {
-    if (inputID.value != "") {
-      resolve("Додано");
-    } else reject("id не заповнено");
-  });
+function validateFieldEmptyValues(field) {
+  if (field.name == 'filename') {
+    return field.innerHTML != field.value;
+  } else {
+    if (field.value) {
+      // console.log('true: ', field.value);
+      field.className = '';
+      return true;
+    } else {
+      // console.log('false: ', field.name);
+      field.className = 'error';
+      return false;
+    }
+  }
 }
 
 function toSaveData() {
@@ -463,13 +501,13 @@ function toSaveData() {
 function isAutoFill() {
   buttonAuto.disabled = !buttonAuto.disabled;
   submit.disabled = buttonID.disabled = !buttonAuto.disabled;
-  pMassage.className = "message";
+  spanMessage.className = "message";
 
   // якщо дані в повідомленні були змінені (тобто при авто заповнені було повідомлення що дані відправлені),
   // щоб не було можливості відправити ті самі данні повторно при знятті галочки Автозаповлення -
   // заблокувати повторне відправлення даних
-  if (pMassage.innerHTML != pMassage.value) {
-    pMassage.innerHTML = pMassage.value;
+  if (spanMessage.innerHTML != spanMessage.value) {
+    spanMessage.innerHTML = spanMessage.value;
     submit.disabled = true;
   }
 
@@ -484,7 +522,7 @@ function isAutoFill() {
 // автозаповнення форми
 function fillData() {
   submit.disabled = false;
-  pMassage.innerHTML = pMassage.value;
+  spanMessage.innerHTML = spanMessage.value;
   const dataEBook = dataFake.autoDataFill();
   // console.log("📚 Книга:", dataEBook);
 
@@ -506,10 +544,18 @@ function fillData() {
     preInforEBook.hidden = false;
     console.log("eBook", dataEBook.ebook.path);
   } else {
+    // очистити данні e-book
+    clearEBook();
     checkboxEbook.checked = false;
     divOpenFile.hidden = true;
     fieldsetEbook.hidden = true;
     preInforEBook.hidden = true;
+  }
+
+  // очистити данні e-book
+  function clearEBook() {
+    labelFileName.innerHTML = labelFileName.value;
+    preInforEBook.innerHTML = preInforEBook.value;
   }
 
   // перевірка, чи існує вказаний жанр у списку вибору
