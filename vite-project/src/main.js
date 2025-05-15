@@ -399,26 +399,32 @@ function dataEBook() {
 function toSaveData(event) {
   event.preventDefault(); // заборона стандартної відправки форми
   // валідація форми
-  validateForm().then(listValidateFields => {
-    alert('Дані збережені..');
+  validateForm()
+  .then(message => {
     spanMessage.className = 'message';
     spanMessage.innerHTML = spanMessage.value;
     // додати збережені дані у localStorage (key=saved_data) 
     // і видалити з key=no_saved_data
-    const noSavedData = JSON.parse(webStorage.getLocalStorage('no_saved_data'))
-    const savedData = JSON.parse(webStorage.getLocalStorage('saved_data'));
+    let noSavedData = JSON.parse(webStorage.getLocalStorage('no_saved_data'))
+    let savedData = JSON.parse(webStorage.getLocalStorage('saved_data'));
     if (noSavedData) {
-      if (!savedData) {
-        savedData = {};
-        
-      } 
-      // const book = noSavedData.idBook;
-      savedData[noSavedData.idBook] = noSavedData;
-      webStorage.setLocalStorage('saved_data', savedData)
-      webStorage.removeLocalStorage('no_saved_data');
+    } else {
+      const noSavedData = createObjectForLocalStorage();
+      webStorage.setLocalStorage('no_saved_data', JSON.stringify(noSavedData));
     }
+    if (!savedData) {
+      savedData = {};
+    } 
+    // const book = noSavedData.idBook;
+    console.log(noSavedData);
+    savedData[noSavedData.idBook] = noSavedData;
+    webStorage.setLocalStorage('saved_data', savedData)
+    webStorage.removeLocalStorage('no_saved_data');
+    submit.disabled = true;
+    alert(message);
   })
   .catch(errors => {
+    console.log(errors);
     spanMessage.setAttribute("class", "error");
     spanMessage.innerHTML = `** Виділені поля (${errors}шт.) повинні бути заповнені`;
   })
@@ -475,10 +481,12 @@ function validateForm() {
     listValidateFields.forEach(field => !validateFieldEmptyValues(field) ? errors++ : NaN);
 
     if (errors > 0) {
+
       reject(errors);
       
     } else {
-      resolve(listValidateFields);
+      
+      resolve('Дані збережені..');
       
     }
   })
