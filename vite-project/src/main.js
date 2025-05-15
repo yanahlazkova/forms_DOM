@@ -7,7 +7,7 @@ let defaultTextColor = "green"; // колір тексту позамовчув�
 // const radioBlue = document.getElementById("blue");
 // const radioGreen = document.getElementById("green");
 
-// події при зміні Radio
+// події при зміні кольору текстру Radio
 const radios = document.querySelectorAll("input[type=radio][name=text_color]");
 radios.forEach((radio) => {
   radio.addEventListener("change", (event) => {
@@ -32,14 +32,14 @@ const table = document.body.querySelectorAll("table")[0]; // firstElementChild.n
 const divContainer = document.body.getElementsByClassName("container")[0];
 table.before(h1, divContainer);
 
-// колір тексту в контейнері
-// divContainer.style.color = defoltTextColor;
+// дії після завантаження всіх елементів на сторінку
 document.addEventListener("DOMContentLoaded", () => {
+  // встановлення кольору тексту
   setTextColor();
   // заповнити поля останніми даними, які не були збережені минулого разу
   const noSavedData = webStorage.getLocalStorage('no_saved_data');
   if (noSavedData) {
-    fillData();
+    fillData(JSON.parse(noSavedData));
   }
 });
 
@@ -93,7 +93,7 @@ links.forEach((link) =>
 
 // const formAddBook = document.querySelector('form.AddBook');
 const formAddBook = document.forms.addbook;
-formAddBook.onsubmit = saveData;
+formAddBook.onsubmit = toSaveData;
 
 // Title
 const labelBookTitle = formAddBook.querySelector('label[for="bTitle"]');
@@ -103,13 +103,10 @@ const inputBookTitle = formAddBook.querySelector('input[id="bTitle"]');
 inputBookTitle.setAttribute("placeholder", "Title of the book..");
 inputBookTitle.className = '';
 // inputBookTitle.required = true;
-inputBookTitle.onblur = function () {
-  if (inputBookTitle.value != "") {
-    spanMessage.className = 'message';
-    spanMessage.innerHTML = spanMessage.value;
-    inputBookTitle.className = "";
-  }
-};
+inputBookTitle.addEventListener('blur', checkValue); 
+
+
+
 
 // Author
 const labelBookAuthor = formAddBook.querySelector('label[for="author"');
@@ -118,7 +115,7 @@ labelBookAuthor.innerHTML = "Author:";
 const inputBookAuthor = formAddBook.querySelector("#author");
 inputBookAuthor.setAttribute("placeholder", "Author..");
 // inputBookAuthor.required = true;
-// listDate.push(inputBookAuthor);
+inputBookAuthor.addEventListener('blur', checkValue); // потеря фокусу
 
 // Видалимо div з тегом area
 inputBookAuthor.parentElement.parentElement.nextElementSibling.nextElementSibling.remove(); //setAttribute('hidden', 'true');
@@ -271,7 +268,7 @@ formAddBook.prepend(divAutoFill);
 
 // const buttonAuto = formAddBook.querySelector('input[type=submit]').cloneNode(true);// document.createElement('input');
 const buttonAuto = document.createElement("button");
-buttonAuto.onclick = fillData;
+buttonAuto.onclick = autoFillData;
 buttonAuto.innerHTML = "Auto fill";
 buttonAuto.setAttribute("type", "button");
 buttonAuto.disabled = true;
@@ -354,8 +351,17 @@ for (let elem of formAddBook.querySelectorAll(
   };
 }
 
+// перевірка заповнення полів
+function checkValue(e) {
+    if (e.target.value != "") {
+      e.target.className = "";
+      spanMessage.className = 'message';
+      spanMessage.innerHTML = spanMessage.value;
+  }
+}
+
 // показати/сховати додавання файлу e-Book
-function isEBook(e) {
+function isEBook() {
   // console.log(e.target.checked, !checkboxEbook.checked);
   divOpenFile.hidden = !checkboxEbook.checked;
   // console.log(labelOpenFile.hidden);
@@ -390,16 +396,27 @@ function dataEBook() {
 }
 
 // збереження даних форми
-function saveData(event) {
+function toSaveData(event) {
   event.preventDefault(); // заборона стандартної відправки форми
   // валідація форми
   validateForm().then(listValidateFields => {
     alert('Дані збережені..');
     spanMessage.className = 'message';
     spanMessage.innerHTML = spanMessage.value;
-    // видалити незбереженні дані
-
-    // додати нові данні до збережених
+    // додати збережені дані у localStorage (key=saved_data) 
+    // і видалити з key=no_saved_data
+    const noSavedData = JSON.parse(webStorage.getLocalStorage('no_saved_data'))
+    const savedData = JSON.parse(webStorage.getLocalStorage('saved_data'));
+    if (noSavedData) {
+      if (!savedData) {
+        savedData = {};
+        
+      } 
+      // const book = noSavedData.idBook;
+      savedData[noSavedData.idBook] = noSavedData;
+      webStorage.setLocalStorage('saved_data', savedData)
+      webStorage.removeLocalStorage('no_saved_data');
+    }
   })
   .catch(errors => {
     spanMessage.setAttribute("class", "error");
@@ -483,17 +500,6 @@ function validateFieldEmptyValues(field) {
   }
 }
 
-function toSaveData() {
-  // додати збережені дані у localStorage (key=saved_data) 
-    // і видалити з key=field_data
-    const noSavedData = webStorage.getLocalStorage('no_saved_data')
-    const savedData = webStorage.getLocalStorage('saved_data');
-    console.log(noSavedData.id);
-    if (savedData) {
-      webStorage.removeLocalStorage('no_saved_data');
-      // savedData.id = noSavedData.id
-    }
-}
 
 // const isAutoFill = () => {}
 
@@ -520,10 +526,10 @@ function isAutoFill() {
 }
 
 // автозаповнення форми
-function fillData() {
+function autoFillData() {
   submit.disabled = false;
   spanMessage.innerHTML = spanMessage.value;
-  const dataEBook = dataFake.autoDataFill();
+  const dataEBook = dataFake.fakerData();
   // console.log("📚 Книга:", dataEBook);
 
   inputID.value = dataEBook.id;
@@ -552,27 +558,89 @@ function fillData() {
     preInforEBook.hidden = true;
   }
 
-  // очистити данні e-book
-  function clearEBook() {
-    labelFileName.innerHTML = labelFileName.value;
-    preInforEBook.innerHTML = preInforEBook.value;
+  // // перевірка, чи існує вказаний жанр у списку вибору
+  // let isGenre = selectBookGenre.querySelector(
+  //   `[value="${dataEBook.genre.toLowerCase()}"]`
+  // ); // arrayGenre.indexOf(dataBook.genre);
+  // console.log(isGenre);
+  // if (isGenre == null) {
+  //   isGenre = optionBookGenreDetective.cloneNode(false);
+  //   isGenre.innerHTML = dataEBook.genre;
+  //   isGenre.value = dataEBook.genre.toLocaleLowerCase();
+  //   selectBookGenre.append(isGenre);
+  // }
+  // isGenre.selected = true;
+
+  setGenre(dataEBook.genre);
+
+  // додати дані у LocalStorage з ключем field_data
+  const data = createObjectForLocalStorage();
+  webStorage.setLocalStorage('no_saved_data',data);
+}
+
+function createObjectForLocalStorage() {
+  return {
+    idBook: inputID.value,
+    title: inputBookTitle.value,
+    author: inputBookAuthor.value,
+    year: selectBookYear.value,
+    // div E-Book
+    eBookChecked: checkboxEbook.checked,
+    divOpenFileHidden: divOpenFile.hidden,
+    fieldsetEbookHidden: fieldsetEbook.hidden,
+    preInforEBookHidden: !preInforEBook.hidden,
+    ebookFileName: checkboxEbook.checked ? labelFileName.innerHTML : "",
+    infoEBook: checkboxEbook.checked ? preInforEBook.innerHTML : "",
+    genre: selectBookGenre.value
+  }
+}
+
+function fillData(data) {
+  checkboxEbook.checked = data.eBookChecked;
+  inputID.value = data.idBook;
+  inputBookTitle.value = data.title;
+  inputBookAuthor.value = data.author;
+  selectBookYear.value = data.year;
+
+  if (checkboxEbook.checked) {
+    divOpenFile.hidden = false;
+    fieldsetEbook.hidden = false;
+    labelFileName.innerHTML = data.ebookFileName;
+    preInforEBook.hidden = false;
+    preInforEBook.innerHTML = data.infoEBook;
+  } else {
+    // очистити данні e-book
+    clearEBook();
+    checkboxEbook.checked = false;
+    divOpenFile.hidden = true;
+    fieldsetEbook.hidden = true;
+    preInforEBook.hidden = true;
   }
 
-  // перевірка, чи існує вказаний жанр у списку вибору
+  setGenre(data.genre);
+  
+}
+
+// додавання категорії жанру у список 
+function setGenre (genre) {
+// перевірка, чи існує вказаний жанр у списку вибору
   let isGenre = selectBookGenre.querySelector(
-    `[value="${dataEBook.genre.toLowerCase()}"]`
+    `[value="${genre.toLowerCase()}"]`
   ); // arrayGenre.indexOf(dataBook.genre);
   console.log(isGenre);
   if (isGenre == null) {
     isGenre = optionBookGenreDetective.cloneNode(false);
-    isGenre.innerHTML = dataEBook.genre;
-    isGenre.value = dataEBook.genre.toLocaleLowerCase();
+    isGenre.innerHTML = genre;
+    isGenre.value = genre.toLocaleLowerCase();
     selectBookGenre.append(isGenre);
   }
   isGenre.selected = true;
+}
 
-  // додати дані у LocalStorage з ключем field_data
-  webStorage.setLocalStorage('field_data', dataEBook);
+// очистити данні e-book
+function clearEBook() {
+  labelFileName.innerHTML = labelFileName.value;
+  preInforEBook.innerHTML = preInforEBook.value;
 }
 
 function setID() {

@@ -1,6 +1,6 @@
 import { fakerUK as faker } from '@faker-js/faker';
 
-export function autoDataFill() {
+export function fakerData() {
   const book = {
     id: faker.database.mongodbObjectId(),
     title: faker.book.title(),
