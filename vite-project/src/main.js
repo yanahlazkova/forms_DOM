@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // заповнити поля останніми даними, які не були збережені минулого разу
   const noSavedData = webStorage.getLocalStorage('no_saved_data');
   if (noSavedData) {
-    fillData(noSavedData);
+    fillData(JSON.parse(noSavedData));
   }
 });
 
@@ -405,45 +405,29 @@ function toSaveData(event) {
     spanMessage.innerHTML = spanMessage.value;
     // додати збережені дані у localStorage (key=saved_data) 
     // і видалити з key=no_saved_data
-    let noSavedData = webStorage.getLocalStorage('no_saved_data');
-    let savedData = webStorage.getLocalStorage('saved_data');
-    if (!noSavedData) {
-      // console.log('!noSavedData');
-      noSavedData = createObjectForLocalStorage();
-      
+    let noSavedData = JSON.parse(webStorage.getLocalStorage('no_saved_data'))
+    let savedData = JSON.parse(webStorage.getLocalStorage('saved_data'));
+    if (noSavedData) {
+    } else {
+      const noSavedData = createObjectForLocalStorage();
+      webStorage.setLocalStorage('no_saved_data', JSON.stringify(noSavedData));
     }
     if (!savedData) {
       savedData = {};
     } 
-    if (savedData[noSavedData.idBook]) {
-      alert('Книга з подібним id-кодом вже існує' + noSavedData.idBook);
-      webStorage.removeLocalStorage('no_saved_data');
-      return;
-    }
     // const book = noSavedData.idBook;
     console.log(noSavedData);
     savedData[noSavedData.idBook] = noSavedData;
     webStorage.setLocalStorage('saved_data', savedData)
-    .then(
-      (result) => {
-        alert(result);
-        webStorage.removeLocalStorage('no_saved_data');
-        submit.disabled = true;
-        alert(message);
-      },
-      (error) => alert(error)
-    );
+    webStorage.removeLocalStorage('no_saved_data');
+    submit.disabled = true;
+    alert(message);
   })
   .catch(errors => {
     console.log(errors);
     spanMessage.setAttribute("class", "error");
     spanMessage.innerHTML = `** Виділені поля (${errors}шт.) повинні бути заповнені`;
   })
-}
-
-function save(event) {
-  
-  
 }
 
 // перевірка заповнення обов'язкових полів
@@ -502,7 +486,7 @@ function validateForm() {
       
     } else {
       
-      resolve('Дані перевірені..');
+      resolve('Дані збережені..');
       
     }
   })
@@ -599,11 +583,7 @@ function autoFillData() {
 
   // додати дані у LocalStorage з ключем field_data
   const data = createObjectForLocalStorage();
-  // console.log(data);
-  webStorage.setLocalStorage('no_saved_data', data).catch(
-    // (result) => alert(result),
-    (error) => alert(error)
-  );
+  webStorage.setLocalStorage('no_saved_data',data);
 }
 
 function createObjectForLocalStorage() {
