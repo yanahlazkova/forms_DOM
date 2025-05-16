@@ -27,12 +27,15 @@ export function getCookiesColor(cname) {
 // Local Storage
 
 export function setLocalStorage(key, data){
-  localStorage.setItem(key, JSON.stringify(data));
-  console.log(localStorage.getItem(key));
+  return new Promise ((resolve, reject) => {
+    localStorage.setItem(key, JSON.stringify(data));
+    resolve('Додано');
+    reject('Помилка при збереженні даних у ' + key);
+  })
 }
 
 export function getLocalStorage(key) {
-  return localStorage.getItem(key);
+  return JSON.parse(localStorage.getItem(key));
 }
 
 export function removeLocalStorage(key) {
