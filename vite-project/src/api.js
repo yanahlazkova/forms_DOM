@@ -40,6 +40,7 @@ listData.push(address);
 
 // автозаповнення форми читача
 function autoData() {
+    // тут якась помилка????
     reader = getFake.fakerUser();
     toFillData();
 }
