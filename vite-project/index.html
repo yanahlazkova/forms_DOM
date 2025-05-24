@@ -105,8 +105,7 @@
                         <label for="adress">Adress</label>
                     </div>
                     <div class="col-75">
-                        <textarea id="adress" name="adress" placeholder="Your adress.."
-                            style="height:200px"></textarea>
+                        <textarea id="adress" name="adress" placeholder="Your adress.." style="height:200px"></textarea>
                     </div>
                 </div>
                 <br>
@@ -197,18 +196,20 @@
     // locat.addEventListener('click', () => getLocation());
 
 
-    function validate() {
-        result.innerHTML = number.validationMessage;
-        // console.log(number.validationMessage);
+    // function validate() {
+    //     result.innerHTML = number.validationMessage;
+    //     console.log(number.validationMessage);
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => { console.log('Latitude:  ' + position.coords.latitude + "\nLongitude: " + position.coords.longitude) }, () => { alert("Sorry, no position available.") });
-            navigator.geolocation.getCurrentPosition((position) => { console.log('Latitude:  ' + position.coords.latitude + "\nLongitude: " + position.coords.longitude) }, () => { alert("Sorry, no position available.") });
-        } else alert("Geolocation is not supported by this browser.");
-    }
+
+    //     if (navigator.geolocation) {
+    //         navigator.geolocation.getCurrentPosition((position) => { console.log('Latitude:  ' + position.coords.latitude + "\nLongitude: " + position.coords.longitude) }, () => { alert("Sorry, no position available.") });
+    //         navigator.geolocation.getCurrentPosition((position) => { console.log('Latitude:  ' + position.coords.latitude + "\nLongitude: " + position.coords.longitude) }, () => { alert("Sorry, no position available.") });
+    //     } else alert("Geolocation is not supported by this browser.");
+    // }
 
 </script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/faker@5.5.3/dist/faker.min.js"></script> -->
 <script type="module" src="./src/main.js"></script>
 <script type="module" src="./src/api.js"></script>
+
 </html>

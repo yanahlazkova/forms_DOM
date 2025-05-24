@@ -23,15 +23,17 @@ export function getCookiesColor(cname) {
   return NaN;
 }
 
-
 // Local Storage
 
-export function setLocalStorage(key, data){
-  return new Promise ((resolve, reject) => {
-    localStorage.setItem(key, JSON.stringify(data));
-    resolve('Додано');
-    reject('Помилка при збереженні даних у ' + key);
-  })
+export function setLocalStorage(key, data) {
+  return new Promise((resolve, reject) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+      resolve("Додано");
+    } catch (error) {
+      reject("Помилка при збереженні даних у " + key);
+    }
+  });
 }
 
 export function getLocalStorage(key) {
@@ -39,5 +41,12 @@ export function getLocalStorage(key) {
 }
 
 export function removeLocalStorage(key) {
-  localStorage.removeItem(key);
+  return new Promise((resolve, reject) => {
+    try {
+      localStorage.removeItem(key);
+      resolve(`Видалено ${key}`);
+    } catch (error) {
+      reject("Error removing..");
+    }
+  });
 }
