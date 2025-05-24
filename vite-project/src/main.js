@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // заповнити поля останніми даними, які не були збережені минулого разу
   const noSavedData = webStorage.getLocalStorage("no_saved_data");
   if (noSavedData) {
-    fillData(noSavedData);
+    fillData(JSON.parse(noSavedData));
   }
   return true;
 });

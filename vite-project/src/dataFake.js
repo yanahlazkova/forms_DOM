@@ -1,6 +1,6 @@
 import { fakerUK as faker } from '@faker-js/faker';
 
-export function fakerData() {
+export function fakerUser() {
   const book = {
     id: faker.database.mongodbObjectId(),
     title: faker.book.title(),
