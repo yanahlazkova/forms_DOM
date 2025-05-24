@@ -571,7 +571,7 @@ function isAutoFill() {
 function autoFillData() {
   submit.disabled = false;
   spanMessage.innerHTML = spanMessage.value;
-  const dataEBook = dataFake.fakerData();
+  const dataEBook = dataFake.fakerUser();
   // console.log("📚 Книга:", dataEBook);
 
   inputID.value = dataEBook.id;
@@ -622,7 +622,8 @@ function autoFillData() {
 // додати дані у LocalStorage з ключем no_saved_data
 function addNoSavedData() {
   const dataBook = createObjectForLocalStorage();
-  const data[dataBook.idBook] = dataBook;
+  let data = {};
+  data[dataBook.idBook] = dataBook;
   webStorage.setLocalStorage("no_saved_data", data);
 }
 
