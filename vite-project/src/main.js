@@ -1,5 +1,5 @@
-import * as dataFake from "./dataFake";
 import * as webStorage from "./Coockies_LocalStorage";
+import * as dataFake from "./dataFake";
 
 // setCookies();
 let defaultTextColor = "green"; // колір тексту позамовчуваню
@@ -37,10 +37,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // встановлення кольору тексту
   setTextColor();
   // заповнити поля останніми даними, які не були збережені минулого разу
-  const noSavedData = webStorage.getLocalStorage('no_saved_data');
+  const noSavedData = webStorage.getLocalStorage("no_saved_data");
   if (noSavedData) {
-    fillData(JSON.parse(noSavedData));
+    fillData(noSavedData);
   }
+  return true;
 });
 
 function setTextColor() {
@@ -93,7 +94,7 @@ links.forEach((link) =>
 
 // const formAddBook = document.querySelector('form.AddBook');
 const formAddBook = document.forms.addbook;
-formAddBook.onsubmit = toSaveData;
+formAddBook.onsubmit = save; // toSaveData;
 
 // Title
 const labelBookTitle = formAddBook.querySelector('label[for="bTitle"]');
@@ -101,12 +102,9 @@ labelBookTitle.innerHTML = "Book Title:";
 
 const inputBookTitle = formAddBook.querySelector('input[id="bTitle"]');
 inputBookTitle.setAttribute("placeholder", "Title of the book..");
-inputBookTitle.className = '';
+inputBookTitle.className = "";
 // inputBookTitle.required = true;
-inputBookTitle.addEventListener('blur', checkValue); 
-
-
-
+inputBookTitle.addEventListener("blur", checkValue);
 
 // Author
 const labelBookAuthor = formAddBook.querySelector('label[for="author"');
@@ -115,7 +113,7 @@ labelBookAuthor.innerHTML = "Author:";
 const inputBookAuthor = formAddBook.querySelector("#author");
 inputBookAuthor.setAttribute("placeholder", "Author..");
 // inputBookAuthor.required = true;
-inputBookAuthor.addEventListener('blur', checkValue); // потеря фокусу
+inputBookAuthor.addEventListener("blur", checkValue); // потеря фокусу
 
 // Видалимо div з тегом area
 inputBookAuthor.parentElement.parentElement.nextElementSibling.nextElementSibling.remove(); //setAttribute('hidden', 'true');
@@ -235,7 +233,7 @@ const inputEBookFile = document.createElement("input");
 inputEBookFile.id = "ebookfile";
 inputEBookFile.name = "ebookfile";
 inputEBookFile.type = "file";
-inputEBookFile.addEventListener("change", dataEBook);
+inputEBookFile.addEventListener("change", showDataEBook);
 inputEBookFile.hidden = true;
 divEbook.append(inputEBookFile);
 
@@ -248,7 +246,7 @@ labelOpenFile.innerHTML = "Вибрати файл";
 
 // відображення назви вибраного файлу
 const labelFileName = document.createElement("label");
-labelFileName.name = 'filename';
+labelFileName.name = "filename";
 labelFileName.value = "Нічого не вибрано..";
 labelFileName.style.marginLeft = "15px";
 labelFileName.style.marginTop = "16px";
@@ -308,7 +306,7 @@ const divInputID = formAddBook
   .cloneNode(true);
 const inputID = divInputID.firstElementChild;
 // inputID.required = false;
-inputID.name = 'idbook';
+inputID.name = "idbook";
 inputID.id = "id";
 inputID.setAttribute("style", "width: 200px");
 inputID.placeholder = "Enter id..";
@@ -353,11 +351,12 @@ for (let elem of formAddBook.querySelectorAll(
 
 // перевірка заповнення полів
 function checkValue(e) {
-    if (e.target.value != "") {
-      e.target.className = "";
-      spanMessage.className = 'message';
-      spanMessage.innerHTML = spanMessage.value;
+  if (e.target.value != "") {
+    e.target.className = "";
+    spanMessage.className = "message";
+    spanMessage.innerHTML = spanMessage.value;
   }
+  return true;
 }
 
 // показати/сховати додавання файлу e-Book
@@ -370,7 +369,7 @@ function isEBook() {
 }
 
 // відображення даних (путь до файлу, ім'я, розмір, формат файлу) eBook
-function dataEBook() {
+function showDataEBook() {
   if (this.files.length > 0) {
     fieldsetEbook.hidden = false;
     const currentFile = this.files[0];
@@ -393,6 +392,7 @@ function dataEBook() {
     // labelFileName.innerHTML = "Нічого не вибрано..";
     labelFileName.innerHTML = labelFileName.value;
   }
+  return true;
 }
 
 // збереження даних форми
@@ -400,34 +400,67 @@ function toSaveData(event) {
   event.preventDefault(); // заборона стандартної відправки форми
   // валідація форми
   validateForm()
-  .then(message => {
-    spanMessage.className = 'message';
-    spanMessage.innerHTML = spanMessage.value;
-    // додати збережені дані у localStorage (key=saved_data) 
-    // і видалити з key=no_saved_data
-    let noSavedData = JSON.parse(webStorage.getLocalStorage('no_saved_data'))
-    let savedData = JSON.parse(webStorage.getLocalStorage('saved_data'));
-    if (noSavedData) {
-    } else {
-      const noSavedData = createObjectForLocalStorage();
-      webStorage.setLocalStorage('no_saved_data', JSON.stringify(noSavedData));
-    }
-    if (!savedData) {
-      savedData = {};
-    } 
-    // const book = noSavedData.idBook;
-    console.log(noSavedData);
-    savedData[noSavedData.idBook] = noSavedData;
-    webStorage.setLocalStorage('saved_data', savedData)
-    webStorage.removeLocalStorage('no_saved_data');
-    submit.disabled = true;
-    alert(message);
-  })
-  .catch(errors => {
-    console.log(errors);
-    spanMessage.setAttribute("class", "error");
-    spanMessage.innerHTML = `** Виділені поля (${errors}шт.) повинні бути заповнені`;
-  })
+    .then((message) => {
+      spanMessage.className = "message";
+      spanMessage.innerHTML = spanMessage.value;
+      // додати збережені дані у localStorage (key=saved_data)
+      // і видалити з key=no_saved_data
+      let noSavedData = JSON.parse(webStorage.getLocalStorage("no_saved_data"));
+      let savedData = JSON.parse(webStorage.getLocalStorage("saved_data"));
+      if (noSavedData) {
+      } else {
+        const noSavedData = createObjectForLocalStorage();
+        webStorage.setLocalStorage(
+          "no_saved_data",
+          JSON.stringify(noSavedData)
+        );
+      }
+      if (!savedData) {
+        savedData = {};
+      }
+      // const book = noSavedData.idBook;
+      console.log(noSavedData);
+      savedData[noSavedData.idBook] = noSavedData;
+      webStorage.setLocalStorage("saved_data", savedData);
+      webStorage.removeLocalStorage("no_saved_data");
+      submit.disabled = true;
+      alert(message);
+    })
+    .catch((errors) => {
+      console.log(errors);
+      spanMessage.setAttribute("class", "error");
+      spanMessage.innerHTML = `** Виділені поля (${errors}шт.) повинні бути заповнені`;
+    });
+}
+
+function save(event) {
+  event.preventDefault();
+  const promise = new Promise((resolve, reject) => {
+    validateForm()
+      .then(
+        (result) => {
+          console.log("Validate:", result);
+          spanMessage.className = "message";
+          spanMessage.innerHTML = spanMessage.value;
+          const dataBook = createObjectForLocalStorage();
+          let savedData = webStorage.getLocalStorage("saved_data");
+          !savedData
+            ? (savedData = {})
+            : (savedData[dataBook.idBook] = dataBook);
+          webStorage.setLocalStorage("saved_data", savedData).then(
+            (result) => alert,
+            (error) => alert
+          );
+        },
+        (error) => console.log("Error", error)
+      )
+      .finally((result) => {
+        confirm("Clear is form?")
+          ? console.log("Clearing..")
+          : console.log("Editing..");
+      });
+    return true;
+  });
 }
 
 // перевірка заповнення обов'язкових полів
@@ -471,43 +504,44 @@ function toSaveData(event) {
 
 // II - спосіб (за допомогою Promise)
 function validateForm() {
-  // за допомогою промісів перевірити валідацію полів
-  return new Promise ((resolve, reject) => {
-    let errors = 0; // для рахування помилок
-    // валідація полів
-    const listValidateFields = [inputID, inputBookTitle, inputBookAuthor];
-    if (checkboxEbook.checked) listValidateFields.push(labelFileName);
+  return new Promise((resolve, reject) => {
+    try {
+      let errors = 0;
+      const listValidateFields = [inputID, inputBookTitle, inputBookAuthor];
+      if (checkboxEbook.checked) {
+        listValidateFields.push(labelFileName);
+      }
 
-    listValidateFields.forEach(field => !validateFieldEmptyValues(field) ? errors++ : NaN);
+      listValidateFields.forEach((field) => {
+        if (!validateFieldEmptyValues(field)) errors++;
+      });
 
-    if (errors > 0) {
-
-      reject(errors);
-      
-    } else {
-      
-      resolve('Дані збережені..');
-      
+      if (errors > 0) {
+        reject(errors);
+      } else {
+        resolve("Валідація успішна..");
+      }
+    } catch (error) {
+      reject("Помилка валідації: " + error.message);
     }
-  })
+  });
 }
 
 function validateFieldEmptyValues(field) {
-  if (field.name == 'filename') {
+  if (field.name == "filename") {
     return field.innerHTML != field.value;
   } else {
     if (field.value) {
       // console.log('true: ', field.value);
-      field.className = '';
+      field.className = "";
       return true;
     } else {
       // console.log('false: ', field.name);
-      field.className = 'error';
+      field.className = "error";
       return false;
     }
   }
 }
-
 
 // const isAutoFill = () => {}
 
@@ -581,9 +615,15 @@ function autoFillData() {
 
   setGenre(dataEBook.genre);
 
-  // додати дані у LocalStorage з ключем field_data
-  const data = createObjectForLocalStorage();
-  webStorage.setLocalStorage('no_saved_data',data);
+  // додати дані у Localtorage з ключем no_saved_data
+  addNoSavedData();
+}
+
+// додати дані у LocalStorage з ключем no_saved_data
+function addNoSavedData() {
+  const dataBook = createObjectForLocalStorage();
+  const data[dataBook.idBook] = dataBook;
+  webStorage.setLocalStorage("no_saved_data", data);
 }
 
 function createObjectForLocalStorage() {
@@ -599,13 +639,14 @@ function createObjectForLocalStorage() {
     preInforEBookHidden: !preInforEBook.hidden,
     ebookFileName: checkboxEbook.checked ? labelFileName.innerHTML : "",
     infoEBook: checkboxEbook.checked ? preInforEBook.innerHTML : "",
-    genre: selectBookGenre.value
-  }
+    genre: selectBookGenre.value,
+  };
 }
 
-function fillData(data) {
+function fillData(dataBook) {
+  inputID.value = Object.keys(dataBook)[0];
+  const data = dataBook[inputID.value];
   checkboxEbook.checked = data.eBookChecked;
-  inputID.value = data.idBook;
   inputBookTitle.value = data.title;
   inputBookAuthor.value = data.author;
   selectBookYear.value = data.year;
@@ -626,12 +667,11 @@ function fillData(data) {
   }
 
   setGenre(data.genre);
-  
 }
 
-// додавання категорії жанру у список 
-function setGenre (genre) {
-// перевірка, чи існує вказаний жанр у списку вибору
+// додавання категорії жанру у список
+function setGenre(genre) {
+  // перевірка, чи існує вказаний жанр у списку вибору
   let isGenre = selectBookGenre.querySelector(
     `[value="${genre.toLowerCase()}"]`
   ); // arrayGenre.indexOf(dataBook.genre);
@@ -652,8 +692,9 @@ function clearEBook() {
 }
 
 function setID() {
-  console.log(dataFake.createID());
   inputID.value = dataFake.createID();
+  const newData = createObjectForLocalStorage();
+  const data = webStorage.setLocalStorage("no_saved_data");
 }
 // let script = document.createElement('script');
 

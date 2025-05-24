@@ -197,15 +197,15 @@
     // locat.addEventListener('click', () => getLocation());
 
 
-    function validate() {
-        result.innerHTML = number.validationMessage;
-        console.log(number.validationMessage);
+    // function validate() {
+    //     result.innerHTML = number.validationMessage;
+    //     console.log(number.validationMessage);
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => { console.log('Latitude:  ' + position.coords.latitude + "\nLongitude: " + position.coords.longitude) }, () => { alert("Sorry, no position available.") });
-            navigator.geolocation.getCurrentPosition((position) => { console.log('Latitude:  ' + position.coords.latitude + "\nLongitude: " + position.coords.longitude) }, () => { alert("Sorry, no position available.") });
-        } else alert("Geolocation is not supported by this browser.");
-    }
+    //     if (navigator.geolocation) {
+    //         navigator.geolocation.getCurrentPosition((position) => { console.log('Latitude:  ' + position.coords.latitude + "\nLongitude: " + position.coords.longitude) }, () => { alert("Sorry, no position available.") });
+    //         navigator.geolocation.getCurrentPosition((position) => { console.log('Latitude:  ' + position.coords.latitude + "\nLongitude: " + position.coords.longitude) }, () => { alert("Sorry, no position available.") });
+    //     } else alert("Geolocation is not supported by this browser.");
+    // }
 
 </script>
 
