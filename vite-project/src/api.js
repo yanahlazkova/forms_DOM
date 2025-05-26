@@ -27,6 +27,8 @@ submit.onclick = toSendServer;
 
 // список обов'язкових полів
 const listData = [];
+const idReader = document.getElementById('idreader');
+listData.push(idReader);
 const firstName = document.getElementById('fname');
 listData.push(firstName);
 const lastName = document.getElementById('lname');
@@ -35,8 +37,11 @@ const email = document.getElementById('email');
 listData.push(email);
 const address = document.getElementById('adress');
 listData.push(address);
+console.log('listData', listData);
 
-
+// встановлення ID
+const buttonID = document.getElementById('buttonid');
+buttonID.onclick = () => idReader.value = getFake.createID();
 
 // автозаповнення форми читача
 function autoData() {
