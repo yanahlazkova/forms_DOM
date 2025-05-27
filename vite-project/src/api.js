@@ -43,6 +43,76 @@ console.log('listData', listData);
 const buttonID = document.getElementById('buttonid');
 buttonID.onclick = () => idReader.value = getFake.createID();
 
+// пошук по ID
+const selectID = document.getElementById('idreaders');
+const divIsFindID = document.querySelector('#findreader');
+const checkboxSearchID = document.querySelector('#issearchid');
+checkboxSearchID.addEventListener('change', getListIDReaders);
+checkboxSearchID.onclick = displaySearchID;
+
+function displaySearchID() {
+    divIsFindID.hidden = !checkboxSearchID.checked;
+}
+
+// отримання списка ID читачів
+async function getListIDReaders(event) {
+    if (!event.target.checked) {
+        // Очистити список ID читачів
+       selectID.innerHTML = '';
+       return;
+    }
+    const githubUsername = import.meta.env.VITE_GITHUB_USERNAME;
+    const repo = "forms_DOM";
+    const filePath = "vite-project/src/readers.json";
+    const token = import.meta.env.VITE_GITHUB_TOKEN;
+
+    const apiUrl = `https://api.github.com/repos/${githubUsername}/${repo}/contents/${filePath}`;
+
+    try {
+    // Получаем текущую версию файла
+    const getResponse = await fetch(apiUrl, {
+        headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json"
+        }
+    });
+
+    if (!getResponse.ok) throw new Error("Файл не найден или ошибка доступа");
+
+    const fileData = await getResponse.json();
+    const content = decodeToUnicode(fileData.content);// atob(fileData.content);
+    const data = JSON.parse(content);
+    
+    // console.log(data);
+    createOptionIDReaders(data);
+
+    } catch (error) {
+    alert("Произошла ошибка: " + error.message);
+    console.error(error);
+    }
+
+}
+
+// кодирования в base64 с Unicode (кирилиця)
+function encodeToBase64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
+function decodeToUnicode(encodedStr) {
+    return decodeURIComponent(escape(atob(encodedStr)))
+}
+
+// заповнення списку з ID читачів
+function createOptionIDReaders(listReaders) {
+    // selectID = document.getElementById('idreaders');
+    listReaders.forEach((reader) => {
+        const optionID = document.createElement("option");
+        console.log(reader);
+        optionID.innerHTML = `${reader.firstname} ${reader.lastname} - ${reader.idreader}`, 
+        selectID.append(optionID)});
+    
+}
+
 // автозаповнення форми читача
 function autoData() {
     reader = getFake.fakerUser();
@@ -57,10 +127,6 @@ function toFillData() {
     address.value = reader.address; 
 }
 
-// кодирования в base64 с Unicode (кирилиця)
-function encodeToBase64(str) {
-  return btoa(unescape(encodeURIComponent(str)));
-}
 
 
 // відправка на сервевер
@@ -119,25 +185,25 @@ async function toSendJSON(event) {
     console.error(error);
     }
 
-    }
+}
 
-    // прочитати з JSON
-    function toReadJSON() {
-        const idReader = prompt('Enter the id..');
-        fetch('https://jsonplaceholder.typicode.com/users')
-        .then(respons => respons.json())
-        .then(users => users[idReader])
-        .then(user => new Promise((resolve, reject) =>
-            {
-                reader.firstName = user.name.split(' ')[0]; 
-                reader.lastName = user.name.split(' ')[1];
-                reader.email = user.email;
-                reader.address = user.address.street + " street, " + user.address.city + " city";
-                resolve(user)
-            }))
-        // .then(user => toFillData())
-        .catch(err => alert(err.message))
-        // setTimeout(() => (console.log(reader.firstName)), 1000);
-        // setTimeout(() => toFillData(), 1000);
-        .then(toFillData());
+// прочитати з JSON
+function toReadJSON() {
+    const idReader = prompt('Enter the id..');
+    fetch('https://jsonplaceholder.typicode.com/users')
+    .then(respons => respons.json())
+    .then(users => users[idReader])
+    .then(user => new Promise((resolve, reject) =>
+        {
+            reader.firstName = user.name.split(' ')[0]; 
+            reader.lastName = user.name.split(' ')[1];
+            reader.email = user.email;
+            reader.address = user.address.street + " street, " + user.address.city + " city";
+            resolve(user)
+        }))
+    // .then(user => toFillData())
+    .catch(err => alert(err.message))
+    // setTimeout(() => (console.log(reader.firstName)), 1000);
+    // setTimeout(() => toFillData(), 1000);
+    .then(toFillData());
 }
