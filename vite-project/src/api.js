@@ -23,10 +23,12 @@ readJSON.onclick = toReadJSON;
 
 // отримаємо кнопку Submit
 const submit = document.querySelector('#writeReader');
-submit.onclick = toSendServer;
+submit.onclick = toSendJSON;
 
 // список обов'язкових полів
 const listData = [];
+const idReader = document.getElementById('idreader');
+listData.push(idReader);
 const firstName = document.getElementById('fname');
 listData.push(firstName);
 const lastName = document.getElementById('lname');
@@ -35,8 +37,11 @@ const email = document.getElementById('email');
 listData.push(email);
 const address = document.getElementById('adress');
 listData.push(address);
+console.log('listData', listData);
 
-
+// встановлення ID
+const buttonID = document.getElementById('buttonid');
+buttonID.onclick = () => idReader.value = getFake.createID();
 
 // автозаповнення форми читача
 function autoData() {
@@ -46,6 +51,7 @@ function autoData() {
 }
 
 function toFillData() {
+    idReader.value = reader.id;
     firstName.value = reader.firstName;
     lastName.value = reader.lastName;
     email.value = reader.email;
@@ -59,7 +65,7 @@ function encodeToBase64(str) {
 
 
 // відправка на сервевер
-async function toSendServer(event) {
+async function toSendJSON(event) {
     event.preventDefault();
     // подготовка даних для відправки
     const formData = new FormData(formAddReader);
