@@ -8,17 +8,25 @@
   },
   {
     "issearchid": "on",
-    "firstname": "ÐÐ°ÑÐ°Ð½",
-    "lastname": "ÐÐ°Ð³Ð¾Ð¹Ð´Ð°",
+    "firstname": "ÃÂÃÂ°ÃÂÃÂ°ÃÂ½",
+    "lastname": "ÃÂÃÂ°ÃÂ³ÃÂ¾ÃÂ¹ÃÂ´ÃÂ°",
     "email": "Yuruui.Luukhno@ukr.net",
-    "adress": "ÐÐ°ÐºÐ°ÑÐ¿Ð°ÑÑÑÐºÐ° Ð¾Ð±Ð»Ð°ÑÑÑ"
+    "adress": "ÃÂÃÂ°ÃÂºÃÂ°ÃÂÃÂ¿ÃÂ°ÃÂÃÂÃÂÃÂºÃÂ° ÃÂ¾ÃÂ±ÃÂ»ÃÂ°ÃÂÃÂÃÂ"
   },
   {
     "issearchid": "on",
     "idreaders": "Clementine Bauch - 5804007dcbec62389de5ec9d",
-    "firstname": "Дмитро",
-    "lastname": "Майстренко",
+    "firstname": "ÐÐ¼Ð¸ÑÑÐ¾",
+    "lastname": "ÐÐ°Ð¹ÑÑÑÐµÐ½ÐºÐ¾",
     "email": "Yustina.Glinsukka@i.ua",
-    "adress": "Івано-Франківська область"
+    "adress": "ÐÐ²Ð°Ð½Ð¾-Ð¤ÑÐ°Ð½ÐºÑÐ²ÑÑÐºÐ° Ð¾Ð±Ð»Ð°ÑÑÑ"
+  },
+  {
+    "issearchid": "on",
+    "idreaders": "Clementine Bauch - 5804007dcbec62389de5ec9d",
+    "firstname": "Охрім",
+    "lastname": "Васильківський",
+    "email": "Artemuuya_Lutsukkuuv@yandex.ua",
+    "adress": "Чернігівська область"
   }
 ]
