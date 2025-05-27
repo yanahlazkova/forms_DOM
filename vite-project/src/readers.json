@@ -8,9 +8,17 @@
   },
   {
     "issearchid": "on",
-    "firstname": "Натан",
-    "lastname": "Лагойда",
+    "firstname": "ÐÐ°ÑÐ°Ð½",
+    "lastname": "ÐÐ°Ð³Ð¾Ð¹Ð´Ð°",
     "email": "Yuruui.Luukhno@ukr.net",
-    "adress": "Закарпатська область"
+    "adress": "ÐÐ°ÐºÐ°ÑÐ¿Ð°ÑÑÑÐºÐ° Ð¾Ð±Ð»Ð°ÑÑÑ"
+  },
+  {
+    "issearchid": "on",
+    "idreaders": "Clementine Bauch - 5804007dcbec62389de5ec9d",
+    "firstname": "Дмитро",
+    "lastname": "Майстренко",
+    "email": "Yustina.Glinsukka@i.ua",
+    "adress": "Івано-Франківська область"
   }
 ]
