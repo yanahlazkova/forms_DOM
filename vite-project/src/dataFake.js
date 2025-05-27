@@ -1,6 +1,6 @@
 import { fakerUK as faker } from '@faker-js/faker';
 
-export function fakerUser() {
+export function fakerBook() {
   const book = {
     id: faker.database.mongodbObjectId(),
     title: faker.book.title(),
@@ -10,6 +10,16 @@ export function fakerUser() {
     ebook: randomEBook()
   };
   return book;
+}
+
+export function fakerUser() {
+    return {
+      id: createID(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      email: faker.internet.email(),
+      address: faker.location.state()
+    }
 }
 
 const randomEBook = () => {
