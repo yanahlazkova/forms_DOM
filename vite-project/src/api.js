@@ -45,7 +45,6 @@ buttonID.onclick = () => idReader.value = getFake.createID();
 
 // автозаповнення форми читача
 function autoData() {
-    // тут якась помилка????
     reader = getFake.fakerUser();
     toFillData();
 }

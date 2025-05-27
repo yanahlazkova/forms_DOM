@@ -79,11 +79,22 @@
                 <hr>
                 <div class="row">
                     <div class="col-25">
+                        <input type="checkbox" id="searchid" name="searchid" style="margin-top: 16px;" onchange="findreader.hidden = !this.checked">
+                        <label for="searchid">Search ID</label>
+                    </div>
+                    <div id="findreader" class="col-75" style="width: 400px;" hidden>
+                        <select id="idreaders" name="idreaders" style="width: 200px; margin-top: 16px;"></select>
+                        <button type="button" id="findid">Find ID</button>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-25">
                         <label for="idreader">Reader-id</label>
                     </div>
                     <div class="col-75">
-                        <input type="text" id="idreader" name="idreader" style="width: 200px" placeholder="Your id..">
-                        <button id="buttonid" type="button" name="idbutton" style="margin-top: 0">ID reader"</button>
+                        <input type="text" id="idreader" name="idreader" style="width: 200px" placeholder="Your id.." disabled>
+                        <button id="buttonid" type="button" name="idbutton" style="margin-top: 0;">Set ID</button>
                     </div>
                 </div>
                 <div class="row">
