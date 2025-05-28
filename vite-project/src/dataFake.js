@@ -15,8 +15,8 @@ export function fakerBook() {
 export function fakerUser() {
     return {
       id: createID(),
-      firstName: faker.person.firstName(),
-      lastName: faker.person.lastName(),
+      firstname: faker.person.firstName(),
+      lastname: faker.person.lastName(),
       email: faker.internet.email(),
       address: faker.location.state()
     }
