@@ -5,13 +5,16 @@ import * as getFake from './dataFake';
 
 
 
-const globalUrl = 'https://github.com/yanahlazkova/forms_DOM/blob/main/vite-project/src/readers.json'
+// const globalUrl = 'https://github.com/yanahlazkova/forms_DOM/blob/main/vite-project/src/readers.json'
 // const globalUrl = './d/Записные книжки OneNote/Мои документы/Olexandr_js/Library_system_DOM/vite-project/src/readers.json';
 // отримаємо форму
 const formAddReader = document.querySelector('#addReader')//document.forms['addReader'];
 
 // данні форми
 let reader = {};
+
+// данні json-файлу (список читачів)
+let dataJSON = undefined;
 
 // отримаємо кнопку автозаповнення форми
 const autoFill = document.querySelector('#autoreader');
@@ -27,21 +30,22 @@ submit.onclick = toSendJSON;
 
 // список обов'язкових полів
 const listData = [];
-const idReader = document.getElementById('idreader');
-listData.push(idReader);
+const id = document.getElementById('idreader');
+listData.push(id);
 const firstName = document.getElementById('fname');
 listData.push(firstName);
 const lastName = document.getElementById('lname');
 listData.push(lastName);
 const email = document.getElementById('email');
 listData.push(email);
-const address = document.getElementById('adress');
+const address = document.getElementById('address');
 listData.push(address);
 console.log('listData', listData);
 
-// встановлення ID
+// встановлення ID-читача
 const buttonID = document.getElementById('buttonid');
-buttonID.onclick = () => idReader.value = getFake.createID();
+const inputID = document.getElementById('idreader');
+buttonID.onclick = () => inputID.value = getFake.createID();
 
 // пошук по ID
 const selectID = document.getElementById('idreaders');
@@ -52,6 +56,18 @@ checkboxSearchID.onclick = displaySearchID;
 
 function displaySearchID() {
     divIsFindID.hidden = !checkboxSearchID.checked;
+}
+
+const buttonFindID = document.getElementById('findid');
+buttonFindID.onclick = findReaderID;
+
+// кодирования в base64 с Unicode (кирилиця)
+function encodeToBase64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
+function decodeToUnicode(encodedStr) {
+    return decodeURIComponent(escape(atob(encodedStr)))
 }
 
 // отримання списка ID читачів
@@ -81,10 +97,12 @@ async function getListIDReaders(event) {
 
     const fileData = await getResponse.json();
     const content = decodeToUnicode(fileData.content);// atob(fileData.content);
-    const data = JSON.parse(content);
+    dataJSON = JSON.parse(content);
+
+
     
     // console.log(data);
-    createOptionIDReaders(data);
+    createOptionIDReaders(dataJSON);
 
     } catch (error) {
     alert("Произошла ошибка: " + error.message);
@@ -93,25 +111,29 @@ async function getListIDReaders(event) {
 
 }
 
-// кодирования в base64 с Unicode (кирилиця)
-function encodeToBase64(str) {
-  return btoa(unescape(encodeURIComponent(str)));
-}
-
-function decodeToUnicode(encodedStr) {
-    return decodeURIComponent(escape(atob(encodedStr)))
-}
-
-// заповнення списку з ID читачів
+// заповнення списку читачів з їх ID 
 function createOptionIDReaders(listReaders) {
-    // selectID = document.getElementById('idreaders');
     listReaders.forEach((reader) => {
         const optionID = document.createElement("option");
-        console.log(reader);
-        optionID.innerHTML = `${reader.firstname} ${reader.lastname} - ${reader.idreader}`, 
+        // console.log(reader);
+        optionID.innerHTML = `${reader.firstname} ${reader.lastname} - ${reader.id}`, 
         selectID.append(optionID)});
-    
+    if (selectID.length) {
+        console.log('Заповнюємо список');
+    } else console.log('Список пустий');
 }
+
+function findReaderID() {
+    // з'ясовуємо який id треба знайти
+    const dataReader = selectID.value.split(' ');
+    const idfind = dataReader[dataReader.length - 1];
+    console.log(idfind);
+
+    // знаходимо id у даних JSON-файлу
+    dataJSON.forEach(foundReader => foundReader.id == idfind ? toFillData(foundReader) : null)
+    // console.log(dataJSON);
+}
+
 
 // автозаповнення форми читача
 function autoData() {
@@ -119,72 +141,112 @@ function autoData() {
     toFillData();
 }
 
-function toFillData() {
-    idReader.value = reader.id;
-    firstName.value = reader.firstName;
-    lastName.value = reader.lastName;
-    email.value = reader.email;
-    address.value = reader.address; 
+function toFillData(newReader = reader) {
+    console.log(newReader);
+    id.value = newReader.id;
+    firstName.value = newReader.firstname;
+    lastName.value = newReader.lastname;
+    email.value = newReader.email;
+    address.value = newReader.address; 
 }
 
-
+// !!! Не правильно записываются в файл idreader
 
 // відправка на сервевер
-async function toSendJSON(event) {
+function toSendJSON(event) {
     event.preventDefault();
-    // подготовка даних для відправки
-    const formData = new FormData(formAddReader);
-    const data = Object.fromEntries(formData.entries());
-    console.log(data);
 
+    // валідація даних
+    validateForm()
+    .then(result => async function() {
+        console.log('validating form: ', result);
 
-    const githubUsername = import.meta.env.VITE_GITHUB_USERNAME;
-    const repo = "forms_DOM";
-    const filePath = "vite-project/src/readers.json";
-    const token = import.meta.env.VITE_GITHUB_TOKEN;
+        // подготовка даних для відправки
+        const formData = new FormData(formAddReader);
+        const data = Object.fromEntries(formData.entries());
+        data.id = inputID.value;
+        // console.log(data);
 
-    const apiUrl = `https://api.github.com/repos/${githubUsername}/${repo}/contents/${filePath}`;
+        const githubUsername = import.meta.env.VITE_GITHUB_USERNAME;
+        const repo = "forms_DOM";
+        const filePath = "vite-project/src/readers.json";
+        const token = import.meta.env.VITE_GITHUB_TOKEN;
 
-    try {
-    // Получаем текущую версию файла
-    const getResponse = await fetch(apiUrl, {
-        headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json"
-        }
-    });
+        const apiUrl = `https://api.github.com/repos/${githubUsername}/${repo}/contents/${filePath}`;
 
-    if (!getResponse.ok) throw new Error("Файл не найден или ошибка доступа");
+        try {
+            // Получаем текущую версию файла
+            const getResponse = await fetch(apiUrl, {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/vnd.github+json"
+                }
+            });
 
-    const fileData = await getResponse.json();
-    const content = atob(fileData.content);
-    const json = JSON.parse(content);
-    json.push(data);
+        if (!getResponse.ok) throw new Error("Файл не найден или ошибка доступа");
 
-    const updatedContent = encodeToBase64(JSON.stringify(json, null, 2));
-
-    // Обновляем файл
-    const updateResponse = await fetch(apiUrl, {
-        method: "PUT",
-        headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json",
-        },
-        body: JSON.stringify({
-        message: "Update readers.json via form submission",
-        content: updatedContent,
-        sha: fileData.sha,
+        const fileData = await getResponse.json();
+        // const content = atob(fileData.content);
+        const content = decodeToUnicode(fileData.content);
+        // console.log('content', content);
+        const dataJSON = JSON.parse(content);
+        // console.log(dataJSON);
+        
+        validateID()
+        .then(result => {
+            console.log('validateID: ', result);
+            dataJSON.push(data);
+        // const updatedContent = encodeToBase64(JSON.stringify(dataJSON, null, 2));
+        // // Обновляем файл
+        // const updateResponse = await fetch(apiUrl, {
+        //     method: "PUT",
+        //     headers: {
+        //     Authorization: `Bearer ${token}`,
+        //     Accept: "application/vnd.github+json",
+        //     },
+        //     body: JSON.stringify({
+        //     message: "Update readers.json via form submission",
+        //     content: updatedContent,
+        //     sha: fileData.sha,
+        //     })
+        // });
+        // const result = await updateResponse.json();
+        // alert("Файл обновлён!");
+        // // console.log('result', result);
         })
-    });
+        .catch(alert);
 
-    const result = await updateResponse.json();
-    alert("Файл обновлён!");
-    console.log(result);
-    } catch (error) {
-    alert("Произошла ошибка: " + error.message);
-    console.error(error);
-    }
+        
+        } catch (error) {
+            alert("Произошла ошибка: " + error.message);
+            console.error(error);
+        }
+    })
+    .catch(alert); 
+    console.log('Validating..');
+    return
+}
 
+function validateID() {
+    console.log(dataJSON);
+    return new Promise((resolve, reject) => {
+        dataJSON.forEach(person => person.id == id.value ? reject('Читач з таким ID вже існує'): resolve())
+
+    })
+}
+
+// валідація на пусті значення, та на вже існуючий id
+function validateForm() {
+    console.log(dataJSON);
+    return new Promise((resolve, reject) => {
+        let errors = 0;
+        listData.forEach(elem => elem.value ? null : errors++);
+        if (errors > 0) {
+            reject ('Не всі поля заповнені: ' + errors);
+        }
+        resolve('Валідація успішна..')
+
+    })
 }
 
 // прочитати з JSON
@@ -195,8 +257,8 @@ function toReadJSON() {
     .then(users => users[idReader])
     .then(user => new Promise((resolve, reject) =>
         {
-            reader.firstName = user.name.split(' ')[0]; 
-            reader.lastName = user.name.split(' ')[1];
+            reader.firstname = user.name.split(' ')[0]; 
+            reader.lastname = user.name.split(' ')[1];
             reader.email = user.email;
             reader.address = user.address.street + " street, " + user.address.city + " city";
             resolve(user)

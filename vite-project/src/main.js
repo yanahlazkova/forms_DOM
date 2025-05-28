@@ -571,7 +571,7 @@ function isAutoFill() {
 function autoFillData() {
   submit.disabled = false;
   spanMessage.innerHTML = spanMessage.value;
-  const dataEBook = dataFake.fakerBook();
+  const dataEBook = dataFake.fakerUser();
   // console.log("📚 Книга:", dataEBook);
 
   inputID.value = dataEBook.id;
