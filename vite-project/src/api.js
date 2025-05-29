@@ -77,61 +77,33 @@ async function getListIDReaders(event) {
        selectID.innerHTML = '';
        return;
     }
-    const githubUsername = import.meta.env.VITE_GITHUB_USERNAME;
-    const repo = "forms_DOM";
-    const filePath = "vite-project/src/readers.json";
-    const token = import.meta.env.VITE_GITHUB_TOKEN;
-
-    const apiUrl = `https://api.github.com/repos/${githubUsername}/${repo}/contents/${filePath}`;
-
-    try {
-    // Получаем текущую версию файла
-    const getResponse = await fetch(apiUrl, {
-        headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json"
-        }
-    });
-
-    if (!getResponse.ok) throw new Error("Файл не найден или ошибка доступа");
-
-    const fileData = await getResponse.json();
-    const content = decodeToUnicode(fileData.content);// atob(fileData.content);
+    // dataJSON = await getGitHubFileContent();
+    const fileData = await getGitHubFileContent();
+    const content = decodeToUnicode(fileData.content);
     dataJSON = JSON.parse(content);
 
-
-    
-    // console.log(data);
-    createOptionIDReaders(dataJSON);
-
-    } catch (error) {
-    alert("Произошла ошибка: " + error.message);
-    console.error(error);
-    }
+    createListIDReaders();
 
 }
 
 // заповнення списку читачів з їх ID 
-function createOptionIDReaders(listReaders) {
-    listReaders.forEach((reader) => {
+function createListIDReaders() {
+    dataJSON.forEach((reader) => {
         const optionID = document.createElement("option");
         // console.log(reader);
         optionID.innerHTML = `${reader.firstname} ${reader.lastname} - ${reader.id}`, 
         selectID.append(optionID)});
     if (selectID.length) {
-        console.log('Заповнюємо список');
+        // console.log('Заповнюємо список');
     } else console.log('Список пустий');
 }
 
 function findReaderID() {
     // з'ясовуємо який id треба знайти
     const dataReader = selectID.value.split(' ');
-    const idfind = dataReader[dataReader.length - 1];
-    console.log(idfind);
+    const idToCheck = dataReader[dataReader.length - 1];
+    dataJSON.forEach(foundReader => foundReader.id == idToCheck ? toFillData(foundReader) : null)
 
-    // знаходимо id у даних JSON-файлу
-    dataJSON.forEach(foundReader => foundReader.id == idfind ? toFillData(foundReader) : null)
-    // console.log(dataJSON);
 }
 
 
@@ -151,46 +123,128 @@ function toFillData(newReader = reader) {
 }
 
 // зчитування даних з файлу на GitHub
-async function getFileFromGitHub() {
+async function getGitHubFileContent() {
     const githubUsername = import.meta.env.VITE_GITHUB_USERNAME;
     const repo = "forms_DOM";
     const filePath = "vite-project/src/readers.json";
     const token = import.meta.env.VITE_GITHUB_TOKEN;
 
     const apiUrl = `https://api.github.com/repos/${githubUsername}/${repo}/contents/${filePath}`;
-    
-    return await fetch(apiUrl, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/vnd.github+json"
+
+    try {
+        const getResponse = await fetch(apiUrl, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/vnd.github+json"
             }
-    })
-    .then(respons =>  respons.json()) 
-    // запишемо дані з файлу у змінну dataJSON
-    .then(users => decodeToUnicode(users.content))
-    // .then( content => dataJSON = JSON.parse(content))
+        });
+
+        if (!getResponse.ok) {
+            // Более специфичные сообщения об ошибках
+            if (getResponse.status === 404) {
+                throw new Error("Файл не найден.");
+            } else if (getResponse.status === 401) {
+                throw new Error("Ошибка авторизации. Проверьте ваш токен.");
+            } else {
+                throw new Error(`Ошибка получения файла: ${getResponse.statusText}`);
+            }
+        }
+
+        const fileData = await getResponse.json();
+        const content = decodeToUnicode(fileData.content);
+        // return JSON.parse(content); // Возвращаем распарсенные данные
+        return fileData;
+    } catch (error) {
+        // Перебрасываем ошибку, чтобы вызывающая функция могла ее обработать
+        throw error;
+    }
 }
 
+
 // відправка на сервевер
-function toSendJSON(event) {
+async function toSendJSON(event) {
     event.preventDefault();
-    getFileFromGitHub()
-    .then(content => {
+    if (submit) submit.disabled = true;
+    try {
+        // 0. Отримуємо актуальні дані з GitHub 
+        const fileData = await getGitHubFileContent();
+        // console.log(fileData.html_url)
+        const content = decodeToUnicode(fileData.content);
         dataJSON = JSON.parse(content);
-        console.log('dataJSON', dataJSON);
 
-    })
+        // 1. Валідація даних форми
+        console.log("Розпочато валідацію форми...");
+        const formValidationResult = await validateForm();
+        console.log(formValidationResult); // "Форма заповнена коректно."
+
+        // 2. Перевірка наявності ID (тільки якщо попередня валідація успішна)
+        console.log("Розпочато перевірку ID...");
+        if (!inputID) throw new Error("Поле для введення ID не знайдено на сторінці.");
+
+        const idValidationResult = await validateID();
+        console.log(idValidationResult); // "ID унікальний."
+        
+        // Якщо обидві перевірки пройшли успішно:
+        alert('Всі перевірки успішні! Дані готові до відправки.');
+
+        // дані з форми для відправки
+        const formData = new FormData(formAddReader);
+        const dataToSend = Object.fromEntries(formData.entries());
+        dataToSend.id = inputID.value;
+
+        console.log("Дані для відправки:", dataToSend);
+        dataJSON.push(dataToSend);
+
+        const updatedContent = encodeToBase64(JSON.stringify(dataJSON, null, 2));
+
+        saveToFile(updatedContent, fileData.sha);
+
+    } catch (error) {
+    // Якщо будь-який з промісів був відхилений (reject), помилка потрапить сюди
+    console.error("Помилка валідації або відправки:", error);
+    alert("Виникла помилка: " + error); // Показуємо помилку користувачеві
+  } finally {
+    if (submit) submit.disabled = false; // Розблоковуємо кнопку незалежно від результату
+  }
+}
+
+async function saveToFile(content, sha) {
+    // Оновлюємо файл
+    try { 
+        const githubUsername = import.meta.env.VITE_GITHUB_USERNAME;
+        const repo = "forms_DOM";
+        const filePath = "vite-project/src/readers.json";
+        const token = import.meta.env.VITE_GITHUB_TOKEN;
+
+        const apiUrl = `https://api.github.com/repos/${githubUsername}/${repo}/contents/${filePath}`;
+
+        const updateResponse = await fetch(apiUrl, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/vnd.github+json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: "Update readers.json", // Сообщение коммита
+                content: content, // Новое содержимое, закодированное в Base64
+                sha: sha // Текущий SHA файла
+            })
+        });
+
+        if (!updateResponse.ok) throw new Error("Ошибка обновления файла на GitHub.");
+
+        console.log("Файл успешно обновлен на GitHub!", await updateResponse.json());
+    } catch (error) {
+        alert("Произошла ошибка при обновлении файла на GitHub: " + error.message);
+        console.error(error);
+    }
+}
 
 
-    // // валідація даних
-    // validateForm()
     // .then(result => async function() {
     //     console.log('validating form: ', result);
 
-    //     // подготовка даних для відправки
-    //     const formData = new FormData(formAddReader);
-    //     const data = Object.fromEntries(formData.entries());
-    //     data.id = inputID.value;
     //     // console.log(data);
 
     //     const githubUsername = import.meta.env.VITE_GITHUB_USERNAME;
@@ -251,26 +305,34 @@ function toSendJSON(event) {
     // .catch(alert); 
     // console.log('Validating..');
     // return
-}
+// }
 
 function validateID() {
     console.log(dataJSON);
     return new Promise((resolve, reject) => {
-        dataJSON.forEach(person => person.id == id.value ? reject('Читач з таким ID вже існує'): resolve())
-
-    })
+        for (const reader of dataJSON) {
+            if (reader.id == inputID.value) return reject('Читач з вказаним id вже існує..');
+        }
+        const readerExists = dataJSON.some(reader => String(reader.id) === String(inputID.value))
+        if (readerExists) {
+            reject(`Читач з вказаним ID (${idToCheck.trim()}) вже існує.`);
+            } else {
+            resolve('ID унікальний.'); // ID не знайдено, отже він унікальний
+            }
+    });
 }
 
 // валідація на пусті значення, та на вже існуючий id
 function validateForm() {
-    console.log(dataJSON);
+    // console.log(dataJSON);
     return new Promise((resolve, reject) => {
         let errors = 0;
-        listData.forEach(elem => elem.value ? null : errors++);
+        listData.forEach(elem => (!elem || !elem.value || elem.value.trim() === '') ? errors++ : null);
         if (errors > 0) {
             reject ('Не всі поля заповнені: ' + errors);
+        } else {
+            resolve('Поля заповнені')
         }
-        resolve('Валідація успішна..')
 
     })
 }
