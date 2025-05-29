@@ -1,3 +1,4 @@
+import { tr } from '@faker-js/faker';
 import * as getFake from './dataFake';
 // import * as Book from './book';
 
@@ -235,6 +236,11 @@ async function saveToFile(content, sha) {
         if (!updateResponse.ok) throw new Error("Ошибка обновления файла на GitHub.");
 
         console.log("Файл успешно обновлен на GitHub!", await updateResponse.json());
+
+        // закрити список ID читачів
+        divIsFindID.hidden = true;
+        checkboxSearchID.checked = false;
+
     } catch (error) {
         alert("Произошла ошибка при обновлении файла на GitHub: " + error.message);
         console.error(error);
