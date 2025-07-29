@@ -1,5 +1,8 @@
 import * as webStorage from "./Coockies_LocalStorage";
 import * as dataFake from "./dataFake";
+// import * as books from './books.json';
+
+
 
 // setCookies();
 let defaultTextColor = "green"; // колір тексту позамовчуваню
@@ -443,7 +446,9 @@ function save(event) {
           spanMessage.className = "message";
           spanMessage.innerHTML = spanMessage.value;
           const dataBook = createObjectForLocalStorage();
+          
           let savedData = webStorage.getLocalStorage("saved_data");
+          saveToFile(savedData)
           !savedData
             ? (savedData = {})
             : (savedData[dataBook.idBook] = dataBook);
@@ -451,16 +456,40 @@ function save(event) {
             (result) => alert,
             (error) => alert
           );
+
         },
         (error) => console.log("Error", error)
       )
       .finally((result) => {
-        confirm("Clear is form?")
-          ? console.log("Clearing..")
-          : console.log("Editing..");
+        // confirm("Clear is form?")
+        //   ? console.log("Clearing..")
+        //   : console.log("Editing..");
+        console.log('Editing..');
       });
     return true;
   });
+}
+
+// Функция, которая сохраняет данные в файл books.json
+function saveToFile(data) {
+  let books = data
+
+  console.log('Saving to file json...');
+  for (let book in data) {
+    books[book.id] = book;
+    console.log(books[book.id]);
+  }
+  const json = JSON.stringify(books, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'books.json'; // Имя файла для скачивания
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 // перевірка заповнення обов'язкових полів
