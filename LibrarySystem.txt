@@ -1,0 +1,4 @@
+Оновлений проект LibrarySystem
+Для запуску:
+в консолі перейти у папку vite-project (cd vite-project)
+потім набрати команду npm run dev
