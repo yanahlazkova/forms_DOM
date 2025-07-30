@@ -436,6 +436,7 @@ function toSaveData(event) {
     });
 }
 
+
 function save(event) {
   event.preventDefault();
   const promise = new Promise((resolve, reject) => {
@@ -448,7 +449,7 @@ function save(event) {
           const dataBook = createObjectForLocalStorage();
           
           let savedData = webStorage.getLocalStorage("saved_data");
-          saveToFile(savedData)
+          // saveToFile(savedData)
           !savedData
             ? (savedData = {})
             : (savedData[dataBook.idBook] = dataBook);
@@ -470,12 +471,15 @@ function save(event) {
   });
 }
 
+const buttonDownloadJson = document.getElementById('download_json');
+buttonDownloadJson.onclick = saveToFile;
+
 // Функция, которая сохраняет данные в файл books.json
-function saveToFile(data) {
-  let books = data
+function saveToFile() {
+  let books = webStorage.getLocalStorage("saved_data");
 
   console.log('Saving to file json...');
-  for (let book in data) {
+  for (let book in books) {
     books[book.id] = book;
     console.log(books[book.id]);
   }
